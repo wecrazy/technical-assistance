@@ -1,0 +1,58 @@
+EMAIL:
+  HOST: "smtp.gmail.com"
+  PORT: 587
+  USERNAME: "service4@csna4u.com"
+  # PASSWORD: "service.12345"
+  PASSWORD: "ejdw ezvf hemy rwhj"
+  MAX_RETRY: 60
+  RETRY_DELAY: 30
+
+DEFAULT:
+  TA_FEEDBACK_URL: "http://127.0.0.1:41492/feedback_ta"
+
+ODOO:
+  JSONRPC: "2.0"
+  # Manage Service #####################################################################
+  LOGIN: desta@smartwebindonesia.com
+  PASSWORD: Makan198
+  DB: gsa_db
+  # URL_SESSION: https://192.101.1.66:8069/web/session/authenticate # Development 20080
+  # URL_GETDATA: https://192.101.1.66:8069/api/getdata
+  URL_SESSION: https://www.gsa4u.net:13070/web/session/authenticate
+  URL_GETDATA: https://www.gsa4u.net:13070/api/getdata
+  # ATM ################################################################################
+  LOGIN_ATM: made@smartwebindonesia.com
+  PASSWORD_ATM: 12345678
+  DB_ATM: field_service_db
+  URL_SESSION_ATM: https://atmms.csna4u.com:8087/web/session/authenticate
+  URL_GETDATA_ATM: https://atmms.csna4u.com:8087/api/getdata
+  MAX_RETRY: 10
+  RETRY_DELAY: 5
+  SESSION_TIMEOUT: "300s"
+  GETDATA_TIMEOUT: "1000m"
+  COMPANY_ALLOWED: [13, 21, 19, 20, 15, 12, 3, 26] # ARTAJASA,DANA,DKI,MANDIRI,MTI,NDP,OVO,SINARMAS
+  
+REPORT:
+  TO:
+    # - "wegirandol@smartwebindonesia.com"
+    # - "fauziab@csna4u.com"
+    # - "tetty_m@csna4u.com"
+    # - "denifajarpratama@csna4u.com"
+    # - "arippradana@csna4u.com"
+    # - "noviamalia.anggraini@csna4u.com"
+    # - "tia_s@smartwebindonesia.com"
+    # - "vera_p@smartwebindonesia.com"
+    # - "heriandi@csna4u.com"
+    # - "budi.sumantri@csna4u.com"
+    # - "septianrizki@csna4u.com"    
+    # - "rafy_m@csna4u.com"    
+  CC:
+    # - "oliver@csna4u.com"
+    # - "cindychang@cybersoft.com.tw"
+    # - "nadia.kristina@csna4u.com"
+    # - "nickenb@csna4u.com"
+    # - "made@smartwebindonesia.com"
+    # - "lilimarlina@smartwebindonesia.com"
+    # - "tetty_m@csna4u.com"
+    # - "tetty.sintauli@smartwebindonesia.com"
+  BCC:
