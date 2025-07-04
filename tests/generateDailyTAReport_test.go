@@ -26,7 +26,6 @@ func LoadEnvFromPaths(paths []string) (string, error) {
 	return "", fmt.Errorf("❌ no .env file found in any of the specified paths")
 }
 
-
 func TestGenerateDailyReportTAActivity(t *testing.T) {
 	// Load YAML config
 	if err := config.LoadConfig(); err != nil {
@@ -54,7 +53,7 @@ func TestGenerateDailyReportTAActivity(t *testing.T) {
 	}
 
 	// Run report generation
-	report, err := controllers.GenerateDailyReportTAActivity(db)
+	report, err := controllers.GenerateDailyReportTAActivity(db, nil)
 
 	// Assertions
 	assert.NoError(t, err, "❌ Report generation should not return an error")
