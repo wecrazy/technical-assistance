@@ -742,7 +742,7 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 	endOfDayWeb := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, now.Location())
 	_ = dbWeb.Model(&model.Admin{}).
 		Where("updated_at BETWEEN ? AND ?", startOfDayWeb, endOfDayWeb).
-		Where("LOWER(fullname) LIKE ? OR LOWER(fullname) LIKE ?", "%assistance%", "%assistant%").
+		Where("LOWER(fullname) LIKE ?", "%technical assistance%").
 		Count(&totalTAStandBy)
 
 	f.SetCellValue(pivotSheet, "L3", totalPendingLeft)

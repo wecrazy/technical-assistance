@@ -181,6 +181,8 @@ func HtmlRoutes(router *gin.Engine, db *gorm.DB, db_call_center *gorm.DB, db_pen
 			tabLogAct.GET("/table.csv", controllers.ExportTable[op_model.LogAct](db_pengerjaan, "Activity Technical Assistance"))
 			tabLogAct.POST("/table2", controllers.TabelDataFotoError(db_pengerjaan))
 			tabLogAct.GET("/table2.csv", controllers.ExportTable[op_model.Error](db_pengerjaan, "Data Foto Error"))
+			tabLogAct.POST("/table3", controllers.TabelDataPending(db_pengerjaan))
+			tabLogAct.GET("/table3.csv", controllers.ExportTable[op_model.Pending](db_pengerjaan, "Data Pending"))
 		}
 		tabTeknisi := web.Group("/tab-teknisi")
 		{

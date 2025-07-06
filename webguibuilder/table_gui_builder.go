@@ -97,6 +97,71 @@ func TABLE_KONFIRMASI_DATA_PENGERJAAN_PENDING(session string, redisDB *redis.Cli
 	return templates
 }
 
+func TABLE_VIEW_DATA_PENDING(session string, redisDB *redis.Client) template.HTML {
+	// Handling Manufactures
+	var tableHeaders []webgui.Column
+	uploaded_file := op_model.Pending{}
+	// Use reflection to get the type of the struct
+	t := reflect.TypeOf(uploaded_file)
+	// Loop through the fields of the struct
+	// tableHeaders = append(tableHeaders,
+	// 	webgui.Column{
+	// 		Data:       "id",
+	// 		Header:     "",
+	// 		Type:       "string",
+	// 		Visible:    true,
+	// 		Editable:   false,
+	// 		Insertable: false,
+	// 		Orderable:  false,
+	// 		Filterable: false,
+	// 	},
+	// )
+	for i := 0; i < t.NumField(); i++ {
+		if i == 0 {
+			tableHeaders = append(tableHeaders, webgui.Column{Data: "id", Header: "", Type: "int"})
+			continue
+		}
+
+		field := t.Field(i)
+		// Get the variable name
+		varName := field.Name
+		varName = fun.AddSpaceBeforeUppercase(varName)
+		// Get the data type
+		dataType := field.Type.String()
+		// Get the JSON key
+		jsonKey := field.Tag.Get("json")
+		if jsonKey == "" || jsonKey == "-" {
+			continue
+		}
+
+		tableHeaders = append(tableHeaders,
+			webgui.Column{
+				Data:       jsonKey,
+				Header:     template.HTML(varName),
+				Type:       dataType,
+				Visible:    true,
+				Editable:   false,
+				Insertable: false,
+				Orderable:  true,
+			},
+		)
+	}
+
+	templates := webgui.RenderDataTableServerSide(
+		"Data Pending",
+		"dt_data_pending",
+		fun.GLOBAL_URL+"web/"+fun.GetRedis("web:"+session, redisDB)+"/tab-log-act/table3",
+		5,
+		[]int{5, 10, 25, 50, 100},
+		[]any{[]any{1, "asc"}},
+		tableHeaders,
+		not(INSERTABLE), not(EDITABLE), not(DELETABLE), not(HIDE_HEADER), not(PASSWORDABLE),
+		not(SCROLL_UP_DOWN), not(SCROLL_LEFT_RIGHT),
+		[]string{EXPORT_PRINT, EXPORT_CSV, EXPORT_ALL},
+	)
+	return templates
+}
+
 func TABLE_VIEW_DATA_ERROR(session string, redisDB *redis.Client) template.HTML {
 	// Handling Manufactures
 	var tableHeaders []webgui.Column

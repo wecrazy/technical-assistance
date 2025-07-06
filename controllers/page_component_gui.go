@@ -95,6 +95,7 @@ func ComponentPage(db *gorm.DB, redisDB *redis.Client) gin.HandlerFunc {
 			"TABLE_KONFIRMASI_DATA_PENGERJAAN_PENDING": webguibuilder.TABLE_KONFIRMASI_DATA_PENGERJAAN_PENDING(admin.Session, redisDB),
 			"TABLE_KONFIRMASI_DATA_PENGERJAAN_ERROR":   webguibuilder.TABLE_KONFIRMASI_DATA_PENGERJAAN_ERROR(admin.Session, redisDB),
 			"TABLE_VIEW_DATA_ERROR":                    webguibuilder.TABLE_VIEW_DATA_ERROR(admin.Session, redisDB),
+			"TABLE_VIEW_DATA_PENDING":                  webguibuilder.TABLE_VIEW_DATA_PENDING(admin.Session, redisDB),
 			"TABLE_LOG_ACT":                            webguibuilder.TABLE_LOG_ACT(admin.Session, redisDB),
 			"get_nama_teknisi":                         fun.GLOBAL_URL + "web/" + fun.GetRedis("web:"+admin.Session, redisDB) + "/tab-teknisi/teknisi/name",
 			"get_serial_number":                        fun.GLOBAL_URL + "web/" + fun.GetRedis("web:"+admin.Session, redisDB) + "/tab-teknisi/teknisi/serial_number",
