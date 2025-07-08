@@ -729,9 +729,11 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 	var totalPendingLeft, totalErrorLeft, totalFollowedUp, totalTAStandBy int64
 	_ = db.Model(&op_model.Pending{}).
 		Where("date BETWEEN ? AND ?", startOfDay, endOfDay).
+		Where("ta_feedback IS NULL").
 		Count(&totalPendingLeft)
 	_ = db.Model(&op_model.Error{}).
 		Where("date BETWEEN ? AND ?", startOfDay, endOfDay).
+		Where("ta_feedback IS NULL").
 		Count(&totalErrorLeft)
 	_ = db.Model(&op_model.LogAct{}).
 		Where("date BETWEEN ? AND ?", startOfDay, endOfDay).
