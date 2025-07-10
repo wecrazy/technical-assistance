@@ -33,5 +33,6 @@ go.work.sum
 
 *.log
 *.txt
+*.xlsx
 
 main

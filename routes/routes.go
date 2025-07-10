@@ -94,6 +94,7 @@ func HtmlRoutes(router *gin.Engine, db *gorm.DB, db_call_center *gorm.DB, db_pen
 	router.GET("/send_report", controllers.SendReportHandler(db_pengerjaan, db))
 	router.GET("/ta_monthly_report", controllers.GetTAMonthlyReport(db_pengerjaan))
 	router.GET("/compared_report", controllers.GetTAComparedReport(db_pengerjaan))
+	router.GET("/tech_error_report", controllers.GetTechErrorReport(db_pengerjaan, db))
 
 	// TA Feedback
 	router.POST(fun.GLOBAL_URL+"ta_feedback", controllers.TAFeedback(redisDB, db_pengerjaan, db))
