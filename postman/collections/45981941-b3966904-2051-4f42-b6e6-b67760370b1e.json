@@ -16,7 +16,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id_task\": \"1631727\",\r\n    \"data\": [\r\n        {\r\n            \"name\": \"partner_street\",\r\n            \"type\": \"string\"\r\n        },\r\n        {\r\n            \"name\":\"x_studio_edc\",\r\n            \"type\": \"array\",\r\n            \"index\": 1\r\n        },\r\n        {\r\n            \"name\": \"active\",\r\n            \"type\": \"boolean\"\r\n        },\r\n        {\r\n            \"name\": \"fsm_task_count\",\r\n            \"type\": \"integer\"\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"id_task\": \"1631727\",\r\n    \"data\": [\r\n        {\r\n            \"name\": \"partner_street\",\r\n            \"type\": \"string\"\r\n        },\r\n        {\r\n            \"name\":\"x_studio_edc\",\r\n            \"type\": \"array\",\r\n            \"index\": 1\r\n        },\r\n        {\r\n            \"name\": \"active\",\r\n            \"type\": \"boolean\"\r\n        },\r\n        {\r\n            \"name\": \"x_supply_thermal\",\r\n            \"type\": \"integer\"\r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
