@@ -2,47 +2,51 @@
 $(document).ready(function () {
   // login
   function checkLoginFields() {
-    var email = $('#email').val();
-    var password = $('#password').val();
-    var captcha = $('#captcha').val();
+    var email = $("#email").val();
+    var password = $("#password").val();
+    var captcha = $("#captcha").val();
 
     // Enable or disable sign-in button based on conditions
-    if (email.trim() !== '' && password.trim() !== '' && captcha.trim() !== '') {
-      $('#signInBtn').prop('disabled', false);
+    if (
+      email.trim() !== "" &&
+      password.trim() !== "" &&
+      captcha.trim() !== ""
+    ) {
+      $("#signInBtn").prop("disabled", false);
     } else {
-      $('#signInBtn').prop('disabled', true);
+      $("#signInBtn").prop("disabled", true);
     }
-    if (email.trim() !== '') {
-      $('#email').removeClass('glowing-border');
+    if (email.trim() !== "") {
+      $("#email").removeClass("glowing-border");
     } else {
-      $('#email').addClass('glowing-border');
+      $("#email").addClass("glowing-border");
     }
-    if (password.trim() !== '') {
-      $('#password-container').removeClass('glowing-border');
+    if (password.trim() !== "") {
+      $("#password-container").removeClass("glowing-border");
     } else {
-      $('#password-container').addClass('glowing-border');
+      $("#password-container").addClass("glowing-border");
     }
-    if (captcha.trim() !== '') {
-      $('#captcha').removeClass('glowing-border');
+    if (captcha.trim() !== "") {
+      $("#captcha").removeClass("glowing-border");
     } else {
-      $('#captcha').addClass('glowing-border');
+      $("#captcha").addClass("glowing-border");
     }
   }
   // Attach keyup event listener to input fields
-  $('#email, #password, #captcha').keyup(function () {
+  $("#email, #password, #captcha").keyup(function () {
     checkLoginFields(this);
   });
 
+  let $captcha = $("#captcha");
 
-  let $captcha = $('#captcha');
-
-  $captcha.on('input', function (event) {
+  $captcha.on("input", function (event) {
     if ($captcha.val().length > 6) {
       $captcha.val($captcha.val().slice(0, 6)); // Trim to 6 characters
       return;
     }
 
-    if ($captcha.val()) { // Check if captcha value exists
+    if ($captcha.val()) {
+      // Check if captcha value exists
       console.log($captcha.val());
       var epochTime = Date.now();
       timeEvents.push(epochTime);
@@ -53,19 +57,18 @@ $(document).ready(function () {
     }
   });
 
-
   // $("#loading-container").hide();
   // Attach a submit event handler to the form
-  $('#formLoginAuthentication').submit(function (e) {
+  $("#formLoginAuthentication").submit(function (e) {
     e.preventDefault();
 
     var formData = {
-      'email-username': $('#email').val(),
-      'password': $('#password').val(),
-      'remember-me': $('#remember-me').is(':checked'),
-      'captcha': $('#captcha').val(),
-      'time-event': JSON.stringify(timeEvents),
-      'captcha-event': JSON.stringify(captchaEvents),
+      "email-username": $("#email").val(),
+      password: $("#password").val(),
+      "remember-me": $("#remember-me").is(":checked"),
+      captcha: $("#captcha").val(),
+      "time-event": JSON.stringify(timeEvents),
+      "captcha-event": JSON.stringify(captchaEvents),
     };
 
     // $.ajax({
@@ -107,8 +110,8 @@ $(document).ready(function () {
     //   }
     // });
     $.ajax({
-      type: 'POST',
-      url: '/login',
+      type: "POST",
+      url: "/login",
       data: formData,
       success: function (response) {
         console.log(response);
@@ -121,43 +124,43 @@ $(document).ready(function () {
           if (error.responseJSON.msg) {
             let minutes = error.responseJSON.minutes || 0;
             let seconds = error.responseJSON.seconds || 0;
-            let email = error.responseJSON.email || 'Unknown';
+            let email = error.responseJSON.email || "Unknown";
 
             Swal.fire({
-              icon: 'error',
-              title: 'Login Failed',
+              icon: "error",
+              title: "Login Failed",
               html: `Login for <strong>${email}</strong> is banned for ${minutes}:${seconds}`,
-              confirmButtonText: 'OK'
+              confirmButtonText: "OK",
             });
 
             startCountdown(minutes, seconds, email);
           } else if (error.responseJSON.error) {
             // Handle Gin's error response
             Swal.fire({
-              icon: 'error',
-              title: 'Error',
+              icon: "error",
+              title: "Error",
               text: error.responseJSON.error,
-              confirmButtonText: 'OK'
+              confirmButtonText: "OK",
             });
           } else {
             // Default error message if no expected keys exist
             Swal.fire({
-              icon: 'error',
-              title: 'Unexpected Error',
-              text: 'An unknown error occurred. Please try again.',
-              confirmButtonText: 'OK'
+              icon: "error",
+              title: "Unexpected Error",
+              text: "An unknown error occurred. Please try again.",
+              confirmButtonText: "OK",
             });
           }
         } else {
           // Handle cases where error.responseJSON is undefined
           Swal.fire({
-            icon: 'error',
-            title: 'Server Error',
-            text: 'No response from the server. Please check your connection.',
-            confirmButtonText: 'OK'
+            icon: "error",
+            title: "Server Error",
+            text: "No response from the server. Please check your connection.",
+            confirmButtonText: "OK",
           });
         }
-      }
+      },
     });
 
     function startCountdown(minutes, seconds, email) {
@@ -168,20 +171,20 @@ $(document).ready(function () {
       let countdown = setInterval(function () {
         if (seconds === 0) {
           if (minutes === 0) {
-            clearInterval(countdown);  // Stop the countdown if time runs out
+            clearInterval(countdown); // Stop the countdown if time runs out
             Swal.fire({
-              icon: 'success',
-              title: 'Time Up',
+              icon: "success",
+              title: "Time Up",
               text: `You can now try logging in again for ${email}.`,
-              confirmButtonText: 'OK'
+              confirmButtonText: "OK",
             });
-            $('#delay_timer').text(``);
+            $("#delay_timer").text(``);
           } else {
-            minutes--;  // Decrement minutes and reset seconds to 59
+            minutes--; // Decrement minutes and reset seconds to 59
             seconds = 59;
           }
         } else {
-          seconds--;  // Decrement seconds
+          seconds--; // Decrement seconds
         }
 
         // Update the timer text in the DOM
@@ -192,18 +195,19 @@ $(document).ready(function () {
     // Function to update the timer element in the DOM
     function updateTimer(minutes, seconds, email) {
       // Add leading zero to seconds if necessary
-      let formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
-      $('#delay_timer').text(`Login for ${email} is banned for ${minutes}:${formattedSeconds}`);
+      let formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
+      $("#delay_timer").text(
+        `Login for ${email} is banned for ${minutes}:${formattedSeconds}`
+      );
     }
-
   });
   function loadAndShowTab(targetTabId) {
     if (targetTabId.substring(1) == "debug") {
       $("#loading-container").removeClass("d-block").addClass("d-none");
       $("#loading-container").hide();
-      $('body').removeClass('loading_background');
+      $("body").removeClass("loading_background");
       $("#debug-container").removeClass("d-none").addClass("d-block");
-      return
+      return;
     }
     if (targetTabId.indexOf("#") >= 0) {
       // console.log(targetTabId);
@@ -211,24 +215,25 @@ $(document).ready(function () {
         // $(targetTabId).show();
         $(targetTabId).removeClass("d-none").addClass("d-block");
       } else {
-        var isTabValid = $(".menu-link:not(.menu-toggle)").filter(function () {
-          return $(this).attr("href") === targetTabId;
-        }).length > 0;
+        var isTabValid =
+          $(".menu-link:not(.menu-toggle)").filter(function () {
+            return $(this).attr("href") === targetTabId;
+          }).length > 0;
         if (isTabValid) {
           fetch(webPath + "components/" + targetTabId.substring(1))
-            .then(response => {
+            .then((response) => {
               if (response.status != 200) {
                 // window.location.reload();
               }
               return response.text();
             })
-            .then(html => {
+            .then((html) => {
               if (html.includes("</html>")) {
                 // window.location.reload();
                 return;
               }
               $("#loading-container").hide();
-              $('body').removeClass('loading_background');
+              $("body").removeClass("loading_background");
 
               $(targetTabId).html(html);
               // $(targetTabId).show();
@@ -237,27 +242,35 @@ $(document).ready(function () {
                 // $("#error-container").show();
                 $("#error-container").removeClass("d-none").addClass("d-block");
               }
-              var targetAnchor = $('a[href="' + targetTabId + '"].menu-link:not(.menu-toggle)');
-              targetAnchor.addClass('active');
+              var targetAnchor = $(
+                'a[href="' + targetTabId + '"].menu-link:not(.menu-toggle)'
+              );
+              targetAnchor.addClass("active");
               // Remove 'active' class from all menu items within the same menu-sub
-              targetAnchor.closest('.menu-inner').find('.menu-item').removeClass('active');
+              targetAnchor
+                .closest(".menu-inner")
+                .find(".menu-item")
+                .removeClass("active");
 
               // Add 'active' class to the clicked menu item
-              targetAnchor.closest('.menu-item').addClass('active');
+              targetAnchor.closest(".menu-item").addClass("active");
 
               // Set parent menu-item with 'active' class
-              targetAnchor.closest('.menu-item').parents('.menu-item').addClass('active');
+              targetAnchor
+                .closest(".menu-item")
+                .parents(".menu-item")
+                .addClass("active");
             })
-            .catch(error => {
-              console.log("Error fetching content:", error)
+            .catch((error) => {
+              console.log("Error fetching content:", error);
               $("#loading-container").removeClass("d-block").addClass("d-none");
-              $('body').removeClass('loading_background');
+              $("body").removeClass("loading_background");
               $("#error-container").removeClass("d-none").addClass("d-block");
             });
         } else {
           $("#loading-container").removeClass("d-block").addClass("d-none");
           $("#error-container").removeClass("d-none").addClass("d-block");
-          $('body').removeClass('loading_background');
+          $("body").removeClass("loading_background");
         }
       }
     } else {
@@ -265,7 +278,7 @@ $(document).ready(function () {
       console.log("Invalid targetTabId:", targetTabId);
     }
   }
-  if (window.location.pathname.indexOf('/page') !== -1) {
+  if (window.location.pathname.indexOf("/page") !== -1) {
     var targetTabId = window.location.hash;
 
     if (targetTabId == null || targetTabId == "") {
@@ -275,7 +288,6 @@ $(document).ready(function () {
 
     // Handle tab clicks
     $(".menu-link:not(.menu-toggle)").click(function (e) {
-
       $(".tab-content").removeClass("d-block").addClass("d-none");
       $("#error-container").removeClass("d-block").addClass("d-none");
 
@@ -284,38 +296,48 @@ $(document).ready(function () {
       loadAndShowTab(targetTabId);
 
       // Remove 'active' class from all menu items within the same menu-sub
-      $(this).closest('.menu-inner').find('.menu-item').removeClass('active');
+      $(this).closest(".menu-inner").find(".menu-item").removeClass("active");
 
       // Add 'active' class to the clicked menu item
-      $(this).closest('.menu-item').addClass('active');
+      $(this).closest(".menu-item").addClass("active");
 
       // Set parent menu-item with 'active' class
-      $(this).closest('.menu-item').parents('.menu-item').addClass('active');
+      $(this).closest(".menu-item").parents(".menu-item").addClass("active");
     });
-
   }
-
 
   // For Avatar badge
   var stateNum = Math.floor(Math.random() * 6);
-  var states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary'];
+  var states = [
+    "success",
+    "danger",
+    "warning",
+    "info",
+    "dark",
+    "primary",
+    "secondary",
+  ];
   var state = states[stateNum];
 
   //in
-  var name = $('#user-admin-name').html(),
+  var name = $("#user-admin-name").html(),
     initials = name.match(/\b\w/g) || [];
 
-  if ($('.mainAvatar > img').attr('src') == "/assets/img/avatars/default.jpg" || $('.mainAvatar > img').attr('src') == "") {
-    initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+  if (
+    $(".mainAvatar > img").attr("src") == "/assets/img/avatars/default.jpg" ||
+    $(".mainAvatar > img").attr("src") == ""
+  ) {
+    initials = (
+      (initials.shift() || "") + (initials.pop() || "")
+    ).toUpperCase();
     output = `<span class="avatar-initial rounded-circle bg-label-${state}">${initials}</span>`;
-    $('.mainAvatar').html(output);
+    $(".mainAvatar").html(output);
   }
-
 });
-document.querySelectorAll('.horizontal-scrollbar').forEach(element => {
+document.querySelectorAll(".horizontal-scrollbar").forEach((element) => {
   new PerfectScrollbar(element, {
     wheelPropagation: false,
-    suppressScrollY: true
+    suppressScrollY: true,
   });
 });
 function jsonToHtml(jsonData) {
@@ -341,12 +363,12 @@ function jsonToHtml(jsonData) {
         element.appendChild(childElement);
       });
     } else if (typeof content === "string") {
-
-
       const parser = new DOMParser();
       try {
-        const doc = parser.parseFromString(content, 'text/html');
-        if (Array.from(doc.body.childNodes).some(node => node.nodeType === 1)) {
+        const doc = parser.parseFromString(content, "text/html");
+        if (
+          Array.from(doc.body.childNodes).some((node) => node.nodeType === 1)
+        ) {
           element.innerHTML += content;
         } else {
           element.appendChild(document.createTextNode(content));
@@ -354,64 +376,61 @@ function jsonToHtml(jsonData) {
       } catch (error) {
         element.appendChild(document.createTextNode(content));
       }
-
     }
 
     return element;
   }
 
-
   var path = window.location.pathname;
 
   // Extract the relevant parts from the path
-  var parts = path.split('/').filter(part => part !== '');
+  var parts = path.split("/").filter((part) => part !== "");
 
   // Convert the parts into the desired format
-  var stringId = parts.map((part, index) => {
-    if (index % 2 === 0) {
-      // Even indices are section names (e.g., "courses", "modules", "contents")
-      return part.substring(0, 2);
-    } else {
-      // Odd indices are section IDs (e.g., "1", "1", "3")
-      return `-${part}-`;
-    }
-  }).join('');
+  var stringId = parts
+    .map((part, index) => {
+      if (index % 2 === 0) {
+        // Even indices are section names (e.g., "courses", "modules", "contents")
+        return part.substring(0, 2);
+      } else {
+        // Odd indices are section IDs (e.g., "1", "1", "3")
+        return `-${part}-`;
+      }
+    })
+    .join("");
 
   var i = 0;
   jsonData.forEach(function (item) {
-
-
-    if (document.getElementById('userLevel').value === "true") {
-      const viewBtn = document.getElementById('viewBtn');
-      viewBtn.classList.remove('d-none');
-      viewBtn.classList.add('d-flex');
-
+    if (document.getElementById("userLevel").value === "true") {
+      const viewBtn = document.getElementById("viewBtn");
+      viewBtn.classList.remove("d-none");
+      viewBtn.classList.add("d-flex");
 
       var validId = stringId + i;
 
       // Create a container div to wrap the buttons
-      var buttonContainer = document.createElement('div');
+      var buttonContainer = document.createElement("div");
 
       // Create the edit button
-      var editButton = document.createElement('button');
+      var editButton = document.createElement("button");
       editButton.id = "change-" + validId;
-      editButton.className = 'btn text-primary edit-btn px-1';
+      editButton.className = "btn text-primary edit-btn px-1";
       editButton.innerHTML = 'Edit <i class="bx bx-edit"></i>';
-      editButton.addEventListener('click', function () {
+      editButton.addEventListener("click", function () {
         editContents(validId);
       });
 
       // Create the delete button
-      var deleteButton = document.createElement('button');
+      var deleteButton = document.createElement("button");
       deleteButton.id = "delete-" + validId;
-      deleteButton.className = 'btn text-danger edit-btn  px-1';
+      deleteButton.className = "btn text-danger edit-btn  px-1";
       deleteButton.innerHTML = '<i class="bx bx-trash" ></i>';
-      deleteButton.addEventListener('click', function () {
+      deleteButton.addEventListener("click", function () {
         deleteContents(validId);
       });
 
       // Append both buttons to the container div
-      buttonContainer.className = 'align-self-end d-flex flex-row';
+      buttonContainer.className = "align-self-end d-flex flex-row";
       buttonContainer.appendChild(editButton);
       buttonContainer.appendChild(deleteButton);
 
@@ -419,46 +438,48 @@ function jsonToHtml(jsonData) {
       container.appendChild(buttonContainer);
     }
 
-
     var element = createHtmlElement(item.tag, item, item.child);
     element.id = validId;
     container.appendChild(element);
     i++;
   });
 
-
   //Content Button
-  var newContentButton = document.createElement('a');
-  newContentButton.className = 'btn d-flex flex-column align-items-center justify-content-center text-primary';
-  newContentButton.innerHTML = '<i class="bx bx-plus-circle bx-lg"></i>Sub Content';
-  newContentButton.addEventListener('click', function () {
+  var newContentButton = document.createElement("a");
+  newContentButton.className =
+    "btn d-flex flex-column align-items-center justify-content-center text-primary";
+  newContentButton.innerHTML =
+    '<i class="bx bx-plus-circle bx-lg"></i>Sub Content';
+  newContentButton.addEventListener("click", function () {
     i++;
     var contentID = stringId + i;
 
-    if (document.getElementById('userLevel').value === "true") {
-
+    if (document.getElementById("userLevel").value === "true") {
       // Create a container div to wrap the buttons
-      var buttonContainer = document.createElement('div');
+      var buttonContainer = document.createElement("div");
 
       // Create the edit button
-      var editButton = document.createElement('button');
+      var editButton = document.createElement("button");
       editButton.id = "change-" + contentID;
-      editButton.className = 'btn text-primary edit-btn px-1';
+      editButton.className = "btn text-primary edit-btn px-1";
       editButton.innerHTML = 'Save <i class="bx bx-save"></i>';
-      editButton.addEventListener('click', function () {
+      editButton.addEventListener("click", function () {
         editContents(contentID);
       });
 
       // Create the delete button
-      var deleteButton = document.createElement('button');
+      var deleteButton = document.createElement("button");
       deleteButton.id = "delete-" + contentID;
-      deleteButton.className = 'btn text-danger edit-btn  px-1';
+      deleteButton.className = "btn text-danger edit-btn  px-1";
       deleteButton.innerHTML = '<i class="bx bx-trash" ></i>';
-      deleteButton.addEventListener('click', function () {
+      deleteButton.addEventListener("click", function () {
         var elementToRemove = document.getElementById(contentID); // Replace with your actual element ID
 
         if (elementToRemove) {
-          var siblingsToRemove = [elementToRemove.previousElementSibling, elementToRemove.previousElementSibling.previousElementSibling];
+          var siblingsToRemove = [
+            elementToRemove.previousElementSibling,
+            elementToRemove.previousElementSibling.previousElementSibling,
+          ];
 
           // Remove the element and its two above siblings
           elementToRemove.remove();
@@ -471,7 +492,7 @@ function jsonToHtml(jsonData) {
       });
 
       // Append both buttons to the container div
-      buttonContainer.className = 'align-self-end d-flex flex-row';
+      buttonContainer.className = "align-self-end d-flex flex-row";
       buttonContainer.appendChild(editButton);
       buttonContainer.appendChild(deleteButton);
 
@@ -479,101 +500,101 @@ function jsonToHtml(jsonData) {
       container.appendChild(buttonContainer);
 
       //create New div
-      var div = document.createElement('div');
+      var div = document.createElement("div");
       div.id = contentID;
       container.appendChild(div);
     }
     const fullToolbar = [
       [
         {
-          font: []
+          font: [],
         },
         {
-          size: []
-        }
+          size: [],
+        },
       ],
-      ['bold', 'italic', 'underline', 'strike'],
+      ["bold", "italic", "underline", "strike"],
       [
         {
-          color: []
+          color: [],
         },
         {
-          background: []
-        }
-      ],
-      [
-        {
-          script: 'super'
+          background: [],
         },
-        {
-          script: 'sub'
-        }
       ],
       [
         {
-          header: '1'
+          script: "super",
         },
         {
-          header: '2'
+          script: "sub",
         },
-        'blockquote',
-        'code-block'
       ],
       [
         {
-          list: 'ordered'
+          header: "1",
         },
         {
-          list: 'bullet'
+          header: "2",
         },
-        {
-          indent: '-1'
-        },
-        {
-          indent: '+1'
-        }
+        "blockquote",
+        "code-block",
       ],
-      [{ direction: 'rtl' }],
-      ['link', 'image', 'video', 'formula'],
-      ['clean']
+      [
+        {
+          list: "ordered",
+        },
+        {
+          list: "bullet",
+        },
+        {
+          indent: "-1",
+        },
+        {
+          indent: "+1",
+        },
+      ],
+      [{ direction: "rtl" }],
+      ["link", "image", "video", "formula"],
+      ["clean"],
     ];
-    const fullEditor = new Quill('#' + contentID, {
-      bounds: '#' + contentID,
-      placeholder: 'Type Something...',
+    const fullEditor = new Quill("#" + contentID, {
+      bounds: "#" + contentID,
+      placeholder: "Type Something...",
       modules: {
         formula: true,
-        toolbar: fullToolbar
+        toolbar: fullToolbar,
       },
-      theme: 'snow'
+      theme: "snow",
     });
   });
-  var newVideoButton = document.createElement('a');
-  newVideoButton.className = 'btn d-flex flex-column align-items-center justify-content-center text-primary';
+  var newVideoButton = document.createElement("a");
+  newVideoButton.className =
+    "btn d-flex flex-column align-items-center justify-content-center text-primary";
   newVideoButton.innerHTML = '<i class="bx bx-video-plus bx-lg"></i>Video';
-  newVideoButton.addEventListener('click', function () {
+  newVideoButton.addEventListener("click", function () {
     i++;
     var contentID = stringId + i;
 
-    if (document.getElementById('userLevel').value === "true") {
-
+    if (document.getElementById("userLevel").value === "true") {
       // Create a container div to wrap the buttons
-      var buttonContainer = document.createElement('div');
+      var buttonContainer = document.createElement("div");
 
       // Create the edit button
-      var editButton = document.createElement('button');
+      var editButton = document.createElement("button");
       editButton.id = "change-" + contentID;
-      editButton.className = 'btn text-primary edit-btn px-1';
+      editButton.className = "btn text-primary edit-btn px-1";
       editButton.innerHTML = 'Save <i class="bx bx-save"></i>';
-      editButton.addEventListener('click', function () {
+      editButton.addEventListener("click", function () {
         editContents(contentID, "video", true);
       });
 
       // Create the delete button
-      var deleteButton = document.createElement('button');
+      var deleteButton = document.createElement("button");
       deleteButton.id = "delete-" + contentID;
-      deleteButton.className = 'btn text-danger edit-btn  px-1';
+      deleteButton.className = "btn text-danger edit-btn  px-1";
       deleteButton.innerHTML = '<i class="bx bx-trash" ></i>';
-      deleteButton.addEventListener('click', function () {
+      deleteButton.addEventListener("click", function () {
         var elementToRemove = document.getElementById(contentID); // Replace with your actual element ID
 
         if (elementToRemove) {
@@ -590,7 +611,7 @@ function jsonToHtml(jsonData) {
       });
 
       // Append both buttons to the container div
-      buttonContainer.className = 'align-self-end d-flex flex-row';
+      buttonContainer.className = "align-self-end d-flex flex-row";
       buttonContainer.appendChild(editButton);
       buttonContainer.appendChild(deleteButton);
 
@@ -599,31 +620,31 @@ function jsonToHtml(jsonData) {
 
       //create New div _________________________________________________________
       // Create the main container div
-      var wrapperDiv = document.createElement('div');
+      var wrapperDiv = document.createElement("div");
       wrapperDiv.id = contentID;
-      wrapperDiv.className = 'wrapper-ua';
+      wrapperDiv.className = "wrapper-ua";
 
       // Create the form element
-      var formElement = document.createElement('form');
-      formElement.id = 'form-' + contentID;
-      formElement.className = 'form-ua text-primary';
-      formElement.action = '#';
+      var formElement = document.createElement("form");
+      formElement.id = "form-" + contentID;
+      formElement.className = "form-ua text-primary";
+      formElement.action = "#";
 
       // Create the file input element
-      var fileInput = document.createElement('input');
-      fileInput.className = 'file-input';
-      fileInput.type = 'file';
-      fileInput.name = 'file';
+      var fileInput = document.createElement("input");
+      fileInput.className = "file-input";
+      fileInput.type = "file";
+      fileInput.name = "file";
       fileInput.hidden = true;
 
       // Create the cloud upload icon
-      var cloudUploadIcon = document.createElement('i');
-      cloudUploadIcon.className = 'bx bx-cloud-upload text-primary';
+      var cloudUploadIcon = document.createElement("i");
+      cloudUploadIcon.className = "bx bx-cloud-upload text-primary";
 
       // Create the paragraph element
-      var paragraphElement = document.createElement('p');
-      paragraphElement.className = 'm-0';
-      paragraphElement.textContent = 'Click To Upload Video';
+      var paragraphElement = document.createElement("p");
+      paragraphElement.className = "m-0";
+      paragraphElement.textContent = "Click To Upload Video";
 
       // Append elements to the form element
       formElement.appendChild(fileInput);
@@ -631,20 +652,19 @@ function jsonToHtml(jsonData) {
       formElement.appendChild(paragraphElement);
 
       // Create the progress area section
-      var progressArea = document.createElement('div');
-      progressArea.className = 'sec-ua progress-area';
+      var progressArea = document.createElement("div");
+      progressArea.className = "sec-ua progress-area";
 
       // Create the uploaded area section
-      var uploadedArea = document.createElement('div');
-      uploadedArea.className = 'sec-ua uploaded-area';
+      var uploadedArea = document.createElement("div");
+      uploadedArea.className = "sec-ua uploaded-area";
 
-      var uploadedArea = document.createElement('div');
-      uploadedArea.className = 'sec-ua uploaded-area';
+      var uploadedArea = document.createElement("div");
+      uploadedArea.className = "sec-ua uploaded-area";
 
       // Create the card div
-      var cardDiv = document.createElement('div');
-      cardDiv.innerHTML =
-        `<div class="card-datatable table-responsive">
+      var cardDiv = document.createElement("div");
+      cardDiv.innerHTML = `<div class="card-datatable table-responsive">
                 <table class="list-video-edit table border-top">
                   <thead>
                     <tr>
@@ -657,7 +677,6 @@ function jsonToHtml(jsonData) {
                 </table>
               </div>
             `;
-
 
       // Append all elements to the main container div
       wrapperDiv.appendChild(formElement);
@@ -693,30 +712,34 @@ function jsonToHtml(jsonData) {
             //   return;
             // }
             Swal.fire({
-              title: 'Upload Verification',
+              title: "Upload Verification",
               text: `Are you sure you want to upload "${file.name}"?`,
-              icon: 'question',
+              icon: "question",
               showCancelButton: true,
-              confirmButtonText: 'Upload!',
-              cancelButtonText: 'Cancel',
-              confirmButtonClass: 'btn btn-primary',
-              cancelButtonClass: 'btn btn-outline-secondary ml-1',
-              buttonsStyling: false
+              confirmButtonText: "Upload!",
+              cancelButtonText: "Cancel",
+              confirmButtonClass: "btn btn-primary",
+              cancelButtonClass: "btn btn-outline-secondary ml-1",
+              buttonsStyling: false,
             }).then((result) => {
               if (result.value) {
                 // User clicked "Upload"
                 uploadFile(file.name); // Replace with your upload function
               } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // User clicked "Cancel" or outside the modal
-                Swal.fire('Cancelled', 'The upload process was cancelled', 'info');
+                Swal.fire(
+                  "Cancelled",
+                  "The upload process was cancelled",
+                  "info"
+                );
               }
             });
-
           }
         };
         // file upload function
         function uploadFile(name) {
-          var contentValidatorElement = document.getElementById('contentValidator').value;
+          var contentValidatorElement =
+            document.getElementById("contentValidator").value;
           let xhr = new XMLHttpRequest(); //creating new xhr object (AJAX)
           xhr.open("POST", "/upload/video/" + contentValidatorElement); //sending post request to the specified URL
           xhr.upload.addEventListener("progress", ({ loaded, total }) => {
@@ -765,7 +788,6 @@ function jsonToHtml(jsonData) {
             if (xhr.status === 200) {
               // Successful response from PHP
               const response = JSON.parse(xhr.responseText);
-
             } else {
               console.error("Error:", xhr.status);
             }
@@ -773,63 +795,87 @@ function jsonToHtml(jsonData) {
           xhr.send(data); //sending form data
         }
       }
-      var dt_basic_table = $('.list-video-edit');
+      var dt_basic_table = $(".list-video-edit");
       if (dt_basic_table.length) {
         dt_basic = dt_basic_table.DataTable({
-          ajax: '/table/video',
+          ajax: "/table/video",
           columns: [
-            { data: '' },
-            { data: 'id' },
-            { data: 'filename' },
-            { data: '' }
+            { data: "" },
+            { data: "id" },
+            { data: "filename" },
+            { data: "" },
           ],
           columnDefs: [
             {
               // For Responsive
-              className: 'control',
+              className: "control",
               orderable: false,
               searchable: false,
               responsivePriority: 2,
               targets: 0,
               render: function (data, type, full, meta) {
-                return '';
-              }
+                return "";
+              },
             },
             {
               targets: 1,
               searchable: false,
-              visible: false
+              visible: false,
             },
             {
               // Avatar image/badge, Name and post
               targets: 2,
               responsivePriority: 4,
               render: function (data, type, full, meta) {
-                var $user_src = full['path'],
-                  $id = full['id'],
-                  $name = full['filename'],
-                  $post = full['updated_by'],
-                  $type = full['type'];
-                $thumbnail = full['thumbnail'];
+                var $user_src = full["path"],
+                  $id = full["id"],
+                  $name = full["filename"],
+                  $post = full["updated_by"],
+                  $type = full["type"];
+                $thumbnail = full["thumbnail"];
                 if ($user_src) {
                   if ($type === "video") {
                     // For Avatar image
                     var $output =
-                      '<video controls="" id="example-plyr-video-player-' + $id + '" playsinline="" poster="' + $thumbnail + '" width="" class="w-100 round" style="max-width:300px;"><source src="' + $user_src + '" type="video/mp4"></video>';
+                      '<video controls="" id="example-plyr-video-player-' +
+                      $id +
+                      '" playsinline="" poster="' +
+                      $thumbnail +
+                      '" width="" class="w-100 round" style="max-width:300px;"><source src="' +
+                      $user_src +
+                      '" type="video/mp4"></video>';
                   } else {
-
                     var $output =
-                      '<img src="' + assetsPath + 'img/avatars/' + $user_src + '" alt="Avatar" class="rounded-circle">';
+                      '<img src="' +
+                      assetsPath +
+                      "img/avatars/" +
+                      $user_src +
+                      '" alt="Avatar" class="rounded-circle">';
                   }
                 } else {
                   // For Avatar badge
                   var stateNum = Math.floor(Math.random() * 6);
-                  var states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary'];
+                  var states = [
+                    "success",
+                    "danger",
+                    "warning",
+                    "info",
+                    "dark",
+                    "primary",
+                    "secondary",
+                  ];
                   var $state = states[stateNum],
-                    $name = full['filename'],
+                    $name = full["filename"],
                     $initials = $name.match(/\b\w/g) || [];
-                  $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
-                  $output = '<span class="avatar-initial rounded-circle bg-label-' + $state + '">' + $initials + '</span>';
+                  $initials = (
+                    ($initials.shift() || "") + ($initials.pop() || "")
+                  ).toUpperCase();
+                  $output =
+                    '<span class="avatar-initial rounded-circle bg-label-' +
+                    $state +
+                    '">' +
+                    $initials +
+                    "</span>";
                 }
                 // Creates full output for row
                 var $row_output =
@@ -837,23 +883,23 @@ function jsonToHtml(jsonData) {
                   '<div class="d-flex flex-column">' +
                   '<span class="emp_name text-truncate">' +
                   $name +
-                  '</span>' +
+                  "</span>" +
                   '<small class="emp_post text-truncate text-muted">' +
                   $post +
-                  '</small>' +
-                  '</div>' +
-                  '</div>';
+                  "</small>" +
+                  "</div>" +
+                  "</div>";
                 return $row_output;
-              }
+              },
             },
             {
               // Actions
               targets: -1,
-              title: 'Actions',
+              title: "Actions",
               orderable: false,
               searchable: false,
               render: function (data, type, full, meta) {
-                var $user_src = full['path'];
+                var $user_src = full["path"];
                 return (
                   '<div class="d-inline-block">' +
                   '<a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i></a>' +
@@ -862,89 +908,96 @@ function jsonToHtml(jsonData) {
                   '<li><a href="javascript:;" class="dropdown-item">Archive</a></li>' +
                   '<div class="dropdown-divider"></div>' +
                   '<li><a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a></li>' +
-                  '</ul>' +
-                  '</div>' +
-                  '<a onclick="appendVideoFirst(\'' + wrapperDiv.id + '\', `' + $user_src + '` )" class="btn btn-sm btn-icon item-edit"><i class="bx bxs-video-plus"></i></a>'
+                  "</ul>" +
+                  "</div>" +
+                  "<a onclick=\"appendVideoFirst('" +
+                  wrapperDiv.id +
+                  "', `" +
+                  $user_src +
+                  '` )" class="btn btn-sm btn-icon item-edit"><i class="bx bxs-video-plus"></i></a>'
                 );
-              }
-            }
+              },
+            },
           ],
-          order: [[1, 'desc']],
+          order: [[1, "desc"]],
           dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
           displayLength: 7,
           lengthMenu: [7, 10, 25, 50, 75, 100],
-          buttons: [
-          ],
+          buttons: [],
           responsive: {
             details: {
               display: $.fn.dataTable.Responsive.display.modal({
                 header: function (row) {
                   var data = row.data();
-                  return 'Details of ' + data['filename'];
-                }
+                  return "Details of " + data["filename"];
+                },
               }),
-              type: 'column',
+              type: "column",
               renderer: function (api, rowIdx, columns) {
                 var data = $.map(columns, function (col, i) {
-                  return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                  return col.title !== "" // ? Do not show row in modal popup if title is blank (for check box)
                     ? '<tr data-dt-row="' +
-                    col.rowIndex +
-                    '" data-dt-column="' +
-                    col.columnIndex +
-                    '">' +
-                    '<td>' +
-                    col.title +
-                    ':' +
-                    '</td> ' +
-                    '<td>' +
-                    col.data +
-                    '</td>' +
-                    '</tr>'
-                    : '';
-                }).join('');
+                        col.rowIndex +
+                        '" data-dt-column="' +
+                        col.columnIndex +
+                        '">' +
+                        "<td>" +
+                        col.title +
+                        ":" +
+                        "</td> " +
+                        "<td>" +
+                        col.data +
+                        "</td>" +
+                        "</tr>"
+                    : "";
+                }).join("");
 
-                return data ? $('<table class="table"/><tbody />').append(data) : false;
-              }
-            }
-          }
+                return data
+                  ? $('<table class="table"/><tbody />').append(data)
+                  : false;
+              },
+            },
+          },
         });
-        $('div.card-header.flex-column').addClass('d-none');
-        dt_basic_table.find('thead').addClass('d-none');
+        $("div.card-header.flex-column").addClass("d-none");
+        dt_basic_table.find("thead").addClass("d-none");
       }
     }
-
   });
-  var newPdfButton = document.createElement('a');
-  newPdfButton.className = 'btn d-flex flex-column align-items-center justify-content-center text-primary';
+  var newPdfButton = document.createElement("a");
+  newPdfButton.className =
+    "btn d-flex flex-column align-items-center justify-content-center text-primary";
   newPdfButton.innerHTML = '<i class="bx bxs-file-plus bx-lg" ></i>Pdf';
-  newPdfButton.addEventListener('click', function () {
+  newPdfButton.addEventListener("click", function () {
     i++;
     var contentID = stringId + i;
 
-    if (document.getElementById('userLevel').value === "true") {
-
+    if (document.getElementById("userLevel").value === "true") {
       // Create a container div to wrap the buttons
-      var buttonContainer = document.createElement('div');
+      var buttonContainer = document.createElement("div");
 
       // Create the edit button
-      var editButton = document.createElement('button');
+      var editButton = document.createElement("button");
       editButton.id = "change-" + contentID;
-      editButton.className = 'btn text-primary edit-btn px-1';
+      editButton.className = "btn text-primary edit-btn px-1";
       editButton.innerHTML = 'Save <i class="bx bx-save"></i>';
-      editButton.addEventListener('click', function () {
+      editButton.addEventListener("click", function () {
         editContents(contentID);
       });
 
       // Create the delete button
-      var deleteButton = document.createElement('button');
+      var deleteButton = document.createElement("button");
       deleteButton.id = "delete-" + contentID;
-      deleteButton.className = 'btn text-danger edit-btn  px-1';
+      deleteButton.className = "btn text-danger edit-btn  px-1";
       deleteButton.innerHTML = '<i class="bx bx-trash" ></i>';
-      deleteButton.addEventListener('click', function () {
+      deleteButton.addEventListener("click", function () {
         var elementToRemove = document.getElementById(contentID); // Replace with your actual element ID
 
         if (elementToRemove) {
-          var siblingsToRemove = [elementToRemove.previousElementSibling, elementToRemove.previousElementSibling.previousElementSibling];
+          var siblingsToRemove = [
+            elementToRemove.previousElementSibling,
+            elementToRemove.previousElementSibling.previousElementSibling,
+          ];
 
           // Remove the element and its two above siblings
           elementToRemove.remove();
@@ -957,7 +1010,7 @@ function jsonToHtml(jsonData) {
       });
 
       // Append both buttons to the container div
-      buttonContainer.className = 'align-self-end d-flex flex-row';
+      buttonContainer.className = "align-self-end d-flex flex-row";
       buttonContainer.appendChild(editButton);
       buttonContainer.appendChild(deleteButton);
 
@@ -965,105 +1018,108 @@ function jsonToHtml(jsonData) {
       container.appendChild(buttonContainer);
 
       //create New div
-      var div = document.createElement('div');
+      var div = document.createElement("div");
       div.id = contentID;
       container.appendChild(div);
     }
     const fullToolbar = [
       [
         {
-          font: []
+          font: [],
         },
         {
-          size: []
-        }
+          size: [],
+        },
       ],
-      ['bold', 'italic', 'underline', 'strike'],
+      ["bold", "italic", "underline", "strike"],
       [
         {
-          color: []
+          color: [],
         },
         {
-          background: []
-        }
-      ],
-      [
-        {
-          script: 'super'
+          background: [],
         },
-        {
-          script: 'sub'
-        }
       ],
       [
         {
-          header: '1'
+          script: "super",
         },
         {
-          header: '2'
+          script: "sub",
         },
-        'blockquote',
-        'code-block'
       ],
       [
         {
-          list: 'ordered'
+          header: "1",
         },
         {
-          list: 'bullet'
+          header: "2",
         },
-        {
-          indent: '-1'
-        },
-        {
-          indent: '+1'
-        }
+        "blockquote",
+        "code-block",
       ],
-      [{ direction: 'rtl' }],
-      ['link', 'image', 'video', 'formula'],
-      ['clean']
+      [
+        {
+          list: "ordered",
+        },
+        {
+          list: "bullet",
+        },
+        {
+          indent: "-1",
+        },
+        {
+          indent: "+1",
+        },
+      ],
+      [{ direction: "rtl" }],
+      ["link", "image", "video", "formula"],
+      ["clean"],
     ];
-    const fullEditor = new Quill('#' + contentID, {
-      bounds: '#' + contentID,
-      placeholder: 'Type Something...',
+    const fullEditor = new Quill("#" + contentID, {
+      bounds: "#" + contentID,
+      placeholder: "Type Something...",
       modules: {
         formula: true,
-        toolbar: fullToolbar
+        toolbar: fullToolbar,
       },
-      theme: 'snow'
+      theme: "snow",
     });
   });
-  var newQuizButton = document.createElement('a');
-  newQuizButton.className = 'btn d-flex flex-column align-items-center justify-content-center text-primary';
+  var newQuizButton = document.createElement("a");
+  newQuizButton.className =
+    "btn d-flex flex-column align-items-center justify-content-center text-primary";
   newQuizButton.innerHTML = '<i class="bx bx-message-add bx-lg"></i>Quiz';
-  newQuizButton.addEventListener('click', function () {
+  newQuizButton.addEventListener("click", function () {
     i++;
     var contentID = stringId + i;
 
-    if (document.getElementById('userLevel').value === "true") {
-
+    if (document.getElementById("userLevel").value === "true") {
       // Create a container div to wrap the buttons
-      var buttonContainer = document.createElement('div');
+      var buttonContainer = document.createElement("div");
 
       // Create the edit button
-      var editButton = document.createElement('button');
+      var editButton = document.createElement("button");
       editButton.id = "change-" + contentID;
-      editButton.className = 'btn text-primary edit-btn px-1';
+      editButton.className = "btn text-primary edit-btn px-1";
       editButton.innerHTML = 'Save <i class="bx bx-save"></i>';
-      editButton.addEventListener('click', function () {
+      editButton.addEventListener("click", function () {
         editContents(contentID);
       });
 
       // Create the delete button
-      var deleteButton = document.createElement('button');
+      var deleteButton = document.createElement("button");
       deleteButton.id = "delete-" + contentID;
-      deleteButton.className = 'btn text-danger edit-btn  px-1';
+      deleteButton.className = "btn text-danger edit-btn  px-1";
       deleteButton.innerHTML = '<i class="bx bx-trash" ></i>';
-      deleteButton.addEventListener('click', function () {
+      deleteButton.addEventListener("click", function () {
         var elementToRemove = document.getElementById(contentID); // Replace with your actual element ID
 
         if (elementToRemove) {
-          var siblingsToRemove = [elementToRemove.previousElementSibling, elementToRemove.previousElementSibling.previousElementSibling];
+          var siblingsToRemove = [
+            elementToRemove.previousElementSibling,
+            elementToRemove.previousElementSibling.previousElementSibling,
+          ];
 
           // Remove the element and its two above siblings
           elementToRemove.remove();
@@ -1076,7 +1132,7 @@ function jsonToHtml(jsonData) {
       });
 
       // Append both buttons to the container div
-      buttonContainer.className = 'align-self-end d-flex flex-row';
+      buttonContainer.className = "align-self-end d-flex flex-row";
       buttonContainer.appendChild(editButton);
       buttonContainer.appendChild(deleteButton);
 
@@ -1084,112 +1140,118 @@ function jsonToHtml(jsonData) {
       container.appendChild(buttonContainer);
 
       //create New div
-      var div = document.createElement('div');
+      var div = document.createElement("div");
       div.id = contentID;
       container.appendChild(div);
     }
     const fullToolbar = [
       [
         {
-          font: []
+          font: [],
         },
         {
-          size: []
-        }
+          size: [],
+        },
       ],
-      ['bold', 'italic', 'underline', 'strike'],
+      ["bold", "italic", "underline", "strike"],
       [
         {
-          color: []
+          color: [],
         },
         {
-          background: []
-        }
-      ],
-      [
-        {
-          script: 'super'
+          background: [],
         },
-        {
-          script: 'sub'
-        }
       ],
       [
         {
-          header: '1'
+          script: "super",
         },
         {
-          header: '2'
+          script: "sub",
         },
-        'blockquote',
-        'code-block'
       ],
       [
         {
-          list: 'ordered'
+          header: "1",
         },
         {
-          list: 'bullet'
+          header: "2",
         },
-        {
-          indent: '-1'
-        },
-        {
-          indent: '+1'
-        }
+        "blockquote",
+        "code-block",
       ],
-      [{ direction: 'rtl' }],
-      ['link', 'image', 'video', 'formula'],
-      ['clean']
+      [
+        {
+          list: "ordered",
+        },
+        {
+          list: "bullet",
+        },
+        {
+          indent: "-1",
+        },
+        {
+          indent: "+1",
+        },
+      ],
+      [{ direction: "rtl" }],
+      ["link", "image", "video", "formula"],
+      ["clean"],
     ];
-    const fullEditor = new Quill('#' + contentID, {
-      bounds: '#' + contentID,
-      placeholder: 'Type Something...',
+    const fullEditor = new Quill("#" + contentID, {
+      bounds: "#" + contentID,
+      placeholder: "Type Something...",
       modules: {
         formula: true,
-        toolbar: fullToolbar
+        toolbar: fullToolbar,
       },
-      theme: 'snow'
+      theme: "snow",
     });
   });
 
-  var newContainerButton = document.createElement('div');
-  newContainerButton.className = 'add-new-content-btn';
-  newContainerButton.className = 'd-flex flex-row border my-3 align-items-center justify-content-center text-primary edit-btn';
+  var newContainerButton = document.createElement("div");
+  newContainerButton.className = "add-new-content-btn";
+  newContainerButton.className =
+    "d-flex flex-row border my-3 align-items-center justify-content-center text-primary edit-btn";
   newContainerButton.appendChild(newContentButton);
   newContainerButton.appendChild(newVideoButton);
   newContainerButton.appendChild(newPdfButton);
   newContainerButton.appendChild(newQuizButton);
 
   // Insert the newContentButton after the mainCourseContent element
-  container.insertAdjacentElement('afterend', newContainerButton);
+  container.insertAdjacentElement("afterend", newContainerButton);
 }
 
 function appendVideoFirst(idWrapper, videoSrc) {
-  var parentElement = $('#' + idWrapper);
+  var parentElement = $("#" + idWrapper);
 
   // Check if the first child is a div with class 'plyr'
-  if (parentElement.children().first().is('div.plyr')) {
+  if (parentElement.children().first().is("div.plyr")) {
     // If it is, remove the div
     parentElement.children().first().remove();
   }
 
   // Add the videoHTML as the first child of the parent element
-  var videoHTML = '<video controls="" id="video-player-' + idWrapper + '" playsinline="" width="" class="w-100" ><source src="' + videoSrc + '" type="video/mp4"></video>';
+  var videoHTML =
+    '<video controls="" id="video-player-' +
+    idWrapper +
+    '" playsinline="" width="" class="w-100" ><source src="' +
+    videoSrc +
+    '" type="video/mp4"></video>';
   parentElement.prepend(videoHTML);
 
   // Initialize Plyr for the newly added video element
-  const videoElements = document.querySelectorAll('video');
+  const videoElements = document.querySelectorAll("video");
   videoElements.forEach(function (video, index) {
-    console.log(video, index)
+    console.log(video, index);
     if (!video.id) {
-      video.id = 'video-player-' + (index + 1);
+      video.id = "video-player-" + (index + 1);
     }
-    const videoPlayer = new Plyr('#' + video.id);
+    const videoPlayer = new Plyr("#" + video.id);
   });
 }
 
-var contentValidatorElement = document.getElementById('contentValidator');
+var contentValidatorElement = document.getElementById("contentValidator");
 
 if (contentValidatorElement) {
   var contentValue = contentValidatorElement.value;
@@ -1207,16 +1269,16 @@ if (contentValidatorElement) {
         var jsonObject = JSON.parse(parsedData.data);
         // console.log(jsonObject);
         jsonToHtml(jsonObject);
-        makeIframeResponsive('ql-video', 3, 2);
+        makeIframeResponsive("ql-video", 3, 2);
 
-        const videoElements = document.querySelectorAll('video');
+        const videoElements = document.querySelectorAll("video");
         videoElements.forEach(function (video, index) {
           // Check if the video element has an ID
           if (!video.id) {
             // If not, set a new ID
-            video.id = 'video-player-' + (index + 1);
+            video.id = "video-player-" + (index + 1);
           }
-          const videoPlayer = new Plyr('#' + video.id);
+          const videoPlayer = new Plyr("#" + video.id);
         });
       } catch (error) {
         console.error("Error parsing JSON:", error);
@@ -1226,8 +1288,11 @@ if (contentValidatorElement) {
       console.log("Error fetching content:", error);
     });
 }
-function makeIframeResponsive(containerClass, aspectRatioWidth, aspectRatioHeight) {
-
+function makeIframeResponsive(
+  containerClass,
+  aspectRatioWidth,
+  aspectRatioHeight
+) {
   // Get all elements with the specified class
   var iframes = document.getElementsByClassName(containerClass);
 
@@ -1235,15 +1300,16 @@ function makeIframeResponsive(containerClass, aspectRatioWidth, aspectRatioHeigh
   function updateIframeHeight(iframe) {
     iframe.style.width = "100%";
     var currentWidth = iframe.offsetWidth;
-    var calculatedHeight = (currentWidth * aspectRatioHeight) / aspectRatioWidth;
+    var calculatedHeight =
+      (currentWidth * aspectRatioHeight) / aspectRatioWidth;
     iframe.style.height = calculatedHeight + "px";
 
     // Prevent right-click on the iframe
-    iframe.addEventListener('contextmenu', function (e) {
+    iframe.addEventListener("contextmenu", function (e) {
       e.preventDefault();
     });
     // Prevent long press on the iframe (for touchscreen devices)
-    iframe.addEventListener('touchstart', function (e) {
+    iframe.addEventListener("touchstart", function (e) {
       var now = new Date().getTime();
       var delta = now - (iframe.touchstart || now + 1);
       iframe.touchstart = now;
@@ -1265,110 +1331,105 @@ function makeIframeResponsive(containerClass, aspectRatioWidth, aspectRatioHeigh
 
   // Listen for window resize events to update the height dynamically
   window.addEventListener("resize", updateAllIframesHeight);
-
 }
 
 function editContents(contentID, type, isNewUpload) {
-
-  const btnChange = document.getElementById("change-" + contentID)
+  const btnChange = document.getElementById("change-" + contentID);
   if (btnChange.innerHTML.includes("Edit")) {
     btnChange.innerHTML = 'Save <i class="bx bx-save"></i>';
     const fullToolbar = [
       [
         {
-          font: []
+          font: [],
         },
         {
-          size: []
-        }
+          size: [],
+        },
       ],
-      ['bold', 'italic', 'underline', 'strike'],
+      ["bold", "italic", "underline", "strike"],
       [
         {
-          color: []
+          color: [],
         },
         {
-          background: []
-        }
-      ],
-      [
-        {
-          script: 'super'
+          background: [],
         },
-        {
-          script: 'sub'
-        }
       ],
       [
         {
-          header: '1'
+          script: "super",
         },
         {
-          header: '2'
+          script: "sub",
         },
-        'blockquote',
-        'code-block'
       ],
       [
         {
-          list: 'ordered'
+          header: "1",
         },
         {
-          list: 'bullet'
+          header: "2",
         },
-        {
-          indent: '-1'
-        },
-        {
-          indent: '+1'
-        }
+        "blockquote",
+        "code-block",
       ],
-      [{ direction: 'rtl' }],
-      ['link', 'image', 'video', 'formula'],
-      ['clean']
+      [
+        {
+          list: "ordered",
+        },
+        {
+          list: "bullet",
+        },
+        {
+          indent: "-1",
+        },
+        {
+          indent: "+1",
+        },
+      ],
+      [{ direction: "rtl" }],
+      ["link", "image", "video", "formula"],
+      ["clean"],
     ];
-    const fullEditor = new Quill('#' + contentID, {
-      bounds: '#' + contentID,
-      placeholder: 'Type Something...',
+    const fullEditor = new Quill("#" + contentID, {
+      bounds: "#" + contentID,
+      placeholder: "Type Something...",
       modules: {
         formula: true,
-        toolbar: fullToolbar
+        toolbar: fullToolbar,
       },
-      theme: 'snow'
+      theme: "snow",
     });
   } else {
-
     const parentElement = document.getElementById(contentID);
     const firstChild = parentElement.children[0];
 
     // Alternatively, if you want to check if the first child is a form
-    if (firstChild.tagName.toLowerCase() === 'form') {
-      Swal.fire('Error!', 'Please Choose Content', 'error');
-      return
+    if (firstChild.tagName.toLowerCase() === "form") {
+      Swal.fire("Error!", "Please Choose Content", "error");
+      return;
     }
 
     if (type === "video" && isNewUpload == true) {
       Swal.fire({
-        title: 'Do you want to Upload New Content?',
-        icon: 'warning',
+        title: "Do you want to Upload New Content?",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonText: 'Save',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true
+        confirmButtonText: "Save",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
       }).then((result) => {
         if (result.isConfirmed) {
-
           if (parentElement.children.length > 0) {
-
             const postData = {
               level: 0,
-              data: firstChild.querySelector('video').outerHTML,
+              data: firstChild.querySelector("video").outerHTML,
             };
 
             fetch("/contents/" + contentValue, {
-              method: 'POST',
+              method: "POST",
               headers: {
-                'Content-Type': 'application/json', // or 'application/x-www-form-urlencoded' depending on your server expectations
+                "Content-Type": "application/json", // or 'application/x-www-form-urlencoded' depending on your server expectations
                 // Add any other headers if needed
               },
               // Convert the postData object to JSON format if sending JSON data
@@ -1384,36 +1445,36 @@ function editContents(contentID, type, isNewUpload) {
                 // console.log(data);
                 btnChange.innerHTML = 'Edit <i class="bx bx-edit"></i>';
                 // Get all child elements except the first one
-                var childElementsToRemove = Array.from(parentElement.children).slice(1);
+                var childElementsToRemove = Array.from(
+                  parentElement.children
+                ).slice(1);
 
                 // Remove each child element
                 childElementsToRemove.forEach(function (childElement) {
                   parentElement.removeChild(childElement);
                 });
 
-                Swal.fire('Saved!', 'Your changes have been saved.', 'success');
+                Swal.fire("Saved!", "Your changes have been saved.", "success");
               })
               .catch(function (error) {
-                Swal.fire('Error!', 'Your changes Failed to saved.', 'error');
+                Swal.fire("Error!", "Your changes Failed to saved.", "error");
                 console.log("Error fetching content:", error);
               });
-
           }
-
         }
       });
     } else {
-      const parts = contentID.split('-');
+      const parts = contentID.split("-");
       const lastNumber = Number(parts[parts.length - 1]);
       const parentElement = document.getElementById(contentID);
 
       Swal.fire({
-        title: 'Do you want to save changes?',
-        icon: 'warning',
+        title: "Do you want to save changes?",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonText: 'Save',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true
+        confirmButtonText: "Save",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
       }).then((result) => {
         if (result.isConfirmed) {
           btnChange.innerHTML = 'Edit <i class="bx bx-edit"></i>';
@@ -1426,7 +1487,7 @@ function editContents(contentID, type, isNewUpload) {
             // Step 3: Get a reference to the first child
             const firstChild = parentElement.children[0];
 
-            Array.from(firstChild.attributes).forEach(attribute => {
+            Array.from(firstChild.attributes).forEach((attribute) => {
               firstChild.removeAttribute(attribute.name);
             });
             firstChild.id = contentID;
@@ -1435,12 +1496,12 @@ function editContents(contentID, type, isNewUpload) {
               level: lastNumber,
               data: firstChild.innerHTML,
             };
-            console.log(firstChild.innerHTML)
+            console.log(firstChild.innerHTML);
 
             fetch("/contents/" + contentValue, {
-              method: 'PATCH',
+              method: "PATCH",
               headers: {
-                'Content-Type': 'application/json', // or 'application/x-www-form-urlencoded' depending on your server expectations
+                "Content-Type": "application/json", // or 'application/x-www-form-urlencoded' depending on your server expectations
                 // Add any other headers if needed
               },
               // Convert the postData object to JSON format if sending JSON data
@@ -1454,45 +1515,41 @@ function editContents(contentID, type, isNewUpload) {
               })
               .then(function (data) {
                 console.log(data);
-                Swal.fire('Saved!', 'Your changes have been saved.', 'success');
+                Swal.fire("Saved!", "Your changes have been saved.", "success");
               })
               .catch(function (error) {
-                Swal.fire('Error!', 'Your changes Failed to saved.', 'error');
+                Swal.fire("Error!", "Your changes Failed to saved.", "error");
                 console.log("Error fetching content:", error);
               });
-
           }
-
         } else {
           // User clicked "Cancel" or closed the dialog
           // Swal.fire('Cancelled', 'Your changes have not been saved.', 'info');
         }
       });
     }
-
   }
 }
 function deleteContents(contentID) {
-
   Swal.fire({
-    title: 'ARE YOU SURE TO DELETE?',
-    icon: 'warning',
+    title: "ARE YOU SURE TO DELETE?",
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonText: 'I AM SURE',
-    cancelButtonText: 'Cancel',
-    reverseButtons: true
+    confirmButtonText: "I AM SURE",
+    cancelButtonText: "Cancel",
+    reverseButtons: true,
   }).then((result) => {
     if (result.isConfirmed) {
-      const parts = contentID.split('-');
+      const parts = contentID.split("-");
       const lastNumber = Number(parts[parts.length - 1]);
       const postData = {
         level: lastNumber,
       };
 
       fetch("/contents/" + contentValue, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json', // or 'application/x-www-form-urlencoded' depending on your server expectations
+          "Content-Type": "application/json", // or 'application/x-www-form-urlencoded' depending on your server expectations
           // Add any other headers if needed
         },
         // Convert the postData object to JSON format if sending JSON data
@@ -1506,20 +1563,19 @@ function deleteContents(contentID) {
         })
         .then(function (data) {
           console.log(data);
-          Swal.fire('Saved!', 'Your content have been DELETED.', 'success');
+          Swal.fire("Saved!", "Your content have been DELETED.", "success");
         })
         .catch(function (error) {
-          Swal.fire('Error!', 'Your content Failed to delete.', 'error');
+          Swal.fire("Error!", "Your content Failed to delete.", "error");
           console.log("Error fetching content:", error);
         });
-
     }
   });
 }
 function viewBtn() {
-  document.querySelectorAll('.edit-btn').forEach(function (element) {
-    element.classList.toggle('d-flex');
-    element.classList.toggle('d-none');
+  document.querySelectorAll(".edit-btn").forEach(function (element) {
+    element.classList.toggle("d-flex");
+    element.classList.toggle("d-none");
   });
 }
 
@@ -1533,14 +1589,14 @@ async function getImage(imageURL, containerId, altText, defJPG) {
   let imgHeight = "auto";
 
   fetch(imageURL, { method: "HEAD" }) // Only check if image exists
-    .then(response => {
+    .then((response) => {
       let img = document.createElement("img");
       img.style.width = imgWidth;
       img.style.height = imgHeight;
       img.className = "card-img-top";
       img.alt = altText;
       img.onclick = function () {
-        window.open(img.src, '_blank');
+        window.open(img.src, "_blank");
       };
 
       if (response.ok) {
@@ -1565,8 +1621,8 @@ async function getImage(imageURL, containerId, altText, defJPG) {
 // PENDING
 async function sendCekPending(button) {
   // Cari elemen input yang terdekat di dalam card yang sama
-  let card = button.closest('.card-cek');
-  let id_task = card.querySelector('.id_task').value;
+  let card = button.closest(".card-cek");
+  let id_task = card.querySelector(".id_task").value;
 
   // console.log("ID Task: "+id_task);
 
@@ -1577,20 +1633,20 @@ async function sendCekPending(button) {
 
   // Tampilkan SweetAlert dengan loading
   Swal.fire({
-    title: 'Processing...',
-    text: 'Data sedang di check...',
+    title: "Processing...",
+    text: "Data sedang di check...",
     allowOutsideClick: false,
     allowEscapeKey: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   try {
-    let response = await fetch('/here/checkData', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+    let response = await fetch("/here/checkData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
     });
 
     // console.log("BODY:"+JSON.stringify(postData));
@@ -1598,20 +1654,18 @@ async function sendCekPending(button) {
     let result = await response.json();
     // console.log("RESULT: " + JSON.stringify(result, null, 2));
 
-
     // Jika request berhasil
     Swal.fire({
       title: "Berhasil!",
       text: "Data berhasil dicek.",
       icon: "success",
       timer: 5000, // Auto close dalam 5 detik
-      showConfirmButton: false
+      showConfirmButton: false,
     });
 
     setTimeout(() => {
       window.location.reload();
     }, 2000);
-
   } catch (error) {
     console.error("Error:", error);
 
@@ -1620,41 +1674,41 @@ async function sendCekPending(button) {
       title: "Gagal!",
       text: "Terjadi kesalahan saat check data.",
       icon: "error",
-      confirmButtonText: "Coba Lagi"
+      confirmButtonText: "Coba Lagi",
     });
   }
 }
 
 async function sendDataKonfirmasiPending(button) {
   // Cari elemen input yang terdekat di dalam card yang sama
-  let card = button.closest('.card');
-  let email = card.querySelector('.email').value;
-  let password = card.querySelector('.password').value;
-  let id_task = card.querySelector('.id_task').value;
+  let card = button.closest(".card");
+  let email = card.querySelector(".email").value;
+  let password = card.querySelector(".password").value;
+  let id_task = card.querySelector(".id_task").value;
 
   // Buat objek JSON
   let postData = {
     email: email,
     password: password,
-    id_task: id_task
+    id_task: id_task,
   };
 
   // Tampilkan SweetAlert dengan loading
   Swal.fire({
-    title: 'Processing...',
-    text: 'Data sedang di proses...',
+    title: "Processing...",
+    text: "Data sedang di proses...",
     allowOutsideClick: false,
     allowEscapeKey: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   try {
-    let response = await fetch('/here/postData', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+    let response = await fetch("/here/postData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
     });
 
     let result = await response.json();
@@ -1665,34 +1719,35 @@ async function sendDataKonfirmasiPending(button) {
       text: "Data berhasil dikirim.",
       icon: "success",
       timer: 5000, // Auto close dalam 5 detik
-      showConfirmButton: false
+      showConfirmButton: false,
     });
 
     // Reload halaman setelah 5 detik
     setTimeout(() => {
       window.location.reload();
     }, 5000);
-
   } catch (error) {
     console.error("Error:", error);
 
     // Jika request gagal
     Swal.fire({
       title: "Gagal!",
-      text: "Terjadi kesalahan saat mengirim data." + (error && error.message ? `\nDetail: ${error.message}` : ""),
+      text:
+        "Terjadi kesalahan saat mengirim data." +
+        (error && error.message ? `\nDetail: ${error.message}` : ""),
       icon: "error",
-      confirmButtonText: "Coba Lagi"
+      confirmButtonText: "Coba Lagi",
     });
   }
 }
 
 async function sendDataHapusPending(button) {
   // Cari elemen input yang terdekat di dalam card yang sama
-  let card = button.closest('.card');
-  let email = card.querySelector('.email').value;
-  let password = card.querySelector('.password').value;
-  let id_task = card.querySelector('.id_task').value;
-  let ta_remark = card.querySelector('.ta_remark').value;
+  let card = button.closest(".card");
+  let email = card.querySelector(".email").value;
+  let password = card.querySelector(".password").value;
+  let id_task = card.querySelector(".id_task").value;
+  let ta_remark = card.querySelector(".ta_remark").value;
 
   // Buat objek JSON
   let postData = {
@@ -1704,20 +1759,20 @@ async function sendDataHapusPending(button) {
 
   // Tampilkan SweetAlert dengan loading
   Swal.fire({
-    title: 'Processing...',
-    text: 'Data sedang di proses...',
+    title: "Processing...",
+    text: "Data sedang di proses...",
     allowOutsideClick: false,
     allowEscapeKey: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   try {
-    let response = await fetch('/here/deleteData', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+    let response = await fetch("/here/deleteData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
     });
 
     let result = await response.json();
@@ -1728,14 +1783,13 @@ async function sendDataHapusPending(button) {
       text: "Data berhasil dihapus.",
       icon: "success",
       timer: 5000, // Auto close dalam 5 detik
-      showConfirmButton: false
+      showConfirmButton: false,
     });
 
     // Reload halaman setelah 5 detik
     setTimeout(() => {
       window.location.reload();
     }, 5000);
-
   } catch (error) {
     console.error("Error:", error);
 
@@ -1744,7 +1798,7 @@ async function sendDataHapusPending(button) {
       title: "Gagal!",
       text: "Terjadi kesalahan saat menghapus data.",
       icon: "error",
-      confirmButtonText: "Coba Lagi"
+      confirmButtonText: "Coba Lagi",
     });
   }
 }
@@ -1752,32 +1806,32 @@ async function sendDataHapusPending(button) {
 // ERROR
 async function sendCekError(button) {
   // Cari elemen input yang terdekat di dalam card yang sama
-  let card = button.closest('.card-cek');
-  let id_task = card.querySelector('.id_task').value;
+  let card = button.closest(".card-cek");
+  let id_task = card.querySelector(".id_task").value;
 
   console.log("ID Task: " + id_task);
 
   // Buat objek JSON
   let postData = {
-    id_task: id_task
+    id_task: id_task,
   };
 
   // Tampilkan SweetAlert dengan loading
   Swal.fire({
-    title: 'Processing...',
-    text: 'Data sedang di check...',
+    title: "Processing...",
+    text: "Data sedang di check...",
     allowOutsideClick: false,
     allowEscapeKey: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   try {
-    let response = await fetch('/here/checkData', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+    let response = await fetch("/here/checkData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
     });
 
     let result = await response.json();
@@ -1788,13 +1842,12 @@ async function sendCekError(button) {
       text: "Data berhasil dicek.",
       icon: "success",
       timer: 5000, // Auto close dalam 5 detik
-      showConfirmButton: false
+      showConfirmButton: false,
     });
 
     setTimeout(() => {
       window.location.reload();
     }, 2000);
-
   } catch (error) {
     console.error("Error:", error);
 
@@ -1803,41 +1856,41 @@ async function sendCekError(button) {
       title: "Gagal!",
       text: "Terjadi kesalahan saat check data.",
       icon: "error",
-      confirmButtonText: "Coba Lagi"
+      confirmButtonText: "Coba Lagi",
     });
   }
 }
 
 async function sendDataKonfirmasiError(button) {
   // Cari elemen input yang terdekat di dalam card yang sama
-  let card = button.closest('.card');
-  let email = card.querySelector('.email').value;
-  let password = card.querySelector('.password').value;
-  let id_task = card.querySelector('.id_task').value;
+  let card = button.closest(".card");
+  let email = card.querySelector(".email").value;
+  let password = card.querySelector(".password").value;
+  let id_task = card.querySelector(".id_task").value;
 
   // Buat objek JSON
   let postData = {
     email: email,
     password: password,
-    id_task: id_task
+    id_task: id_task,
   };
 
   // Tampilkan SweetAlert dengan loading
   Swal.fire({
-    title: 'Processing...',
-    text: 'Data sedang di proses...',
+    title: "Processing...",
+    text: "Data sedang di proses...",
     allowOutsideClick: false,
     allowEscapeKey: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   try {
-    let response = await fetch('/here/postData', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+    let response = await fetch("/here/postData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
     });
 
     let result = await response.json();
@@ -1848,34 +1901,35 @@ async function sendDataKonfirmasiError(button) {
       text: "Data berhasil dikirim.",
       icon: "success",
       timer: 5000, // Auto close dalam 5 detik
-      showConfirmButton: false
+      showConfirmButton: false,
     });
 
     // Reload halaman setelah 5 detik
     setTimeout(() => {
       window.location.reload();
     }, 5000);
-
   } catch (error) {
     console.error("Error:", error);
 
     // Jika request gagal
     Swal.fire({
       title: "Gagal!",
-      text: "Terjadi kesalahan saat mengirim data." + (error && error.message ? `\nDetail: ${error.message}` : ""),
+      text:
+        "Terjadi kesalahan saat mengirim data." +
+        (error && error.message ? `\nDetail: ${error.message}` : ""),
       icon: "error",
-      confirmButtonText: "Coba Lagi"
+      confirmButtonText: "Coba Lagi",
     });
   }
 }
 
 async function sendDataHapusError(button) {
   // Cari elemen input yang terdekat di dalam card yang sama
-  let card = button.closest('.card');
-  let email = card.querySelector('.email').value;
-  let password = card.querySelector('.password').value;
-  let id_task = card.querySelector('.id_task').value;
-  let ta_remark = card.querySelector('.ta_remark').value;
+  let card = button.closest(".card");
+  let email = card.querySelector(".email").value;
+  let password = card.querySelector(".password").value;
+  let id_task = card.querySelector(".id_task").value;
+  let ta_remark = card.querySelector(".ta_remark").value;
 
   // Buat objek JSON
   let postData = {
@@ -1887,20 +1941,20 @@ async function sendDataHapusError(button) {
 
   // Tampilkan SweetAlert dengan loading
   Swal.fire({
-    title: 'Processing...',
-    text: 'Data sedang di proses...',
+    title: "Processing...",
+    text: "Data sedang di proses...",
     allowOutsideClick: false,
     allowEscapeKey: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   try {
-    let response = await fetch('/here/deleteData', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+    let response = await fetch("/here/deleteData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
     });
 
     let result = await response.json();
@@ -1911,14 +1965,13 @@ async function sendDataHapusError(button) {
       text: "Data berhasil dihapus.",
       icon: "success",
       timer: 5000, // Auto close dalam 5 detik
-      showConfirmButton: false
+      showConfirmButton: false,
     });
 
     // Reload halaman setelah 5 detik
     setTimeout(() => {
       window.location.reload();
     }, 5000);
-
   } catch (error) {
     console.error("Error:", error);
 
@@ -1927,7 +1980,7 @@ async function sendDataHapusError(button) {
       title: "Gagal!",
       text: "Terjadi kesalahan saat menghapus data.",
       icon: "error",
-      confirmButtonText: "Coba Lagi"
+      confirmButtonText: "Coba Lagi",
     });
   }
 }
@@ -1959,9 +2012,9 @@ async function sendDataHapusError(button) {
 
 //   let utterance = new SpeechSynthesisUtterance(text);
 //   utterance.lang = "id-ID";
-//   utterance.volume = 1;  
-//   utterance.rate = 1;    
-//   utterance.pitch = 1;   
+//   utterance.volume = 1;
+//   utterance.rate = 1;
+//   utterance.pitch = 1;
 
 //   let voices = synth.getVoices();
 //   let indoVoice = voices.find(voice => voice.lang === "id-ID");
@@ -2041,7 +2094,7 @@ async function sendDataHapusError(button) {
 
 //     socket.onopen = () => {
 //       console.log(`${wsRealtime} Connected`);
-//       resolve(socket); 
+//       resolve(socket);
 //     };
 
 //     socket.onmessage = (event) => {
@@ -2067,7 +2120,7 @@ async function sendDataHapusError(button) {
 //     socket.onclose = async () => {
 //       console.warn(wsRealtime + " closed. Reconnecting in 3 seconds...");
 //       await new Promise(res => setTimeout(res, 3000));
-//       resolve(await createWebSocket(url, wsRealtime, type)); 
+//       resolve(await createWebSocket(url, wsRealtime, type));
 //     };
 //   });
 // }
@@ -2232,13 +2285,13 @@ async function sendDataHapusError(button) {
 
 // Edit Data
 async function sendEditData(button) {
-  let card = button.closest('.card-edit-data');
-  let id_task = card.querySelector('.id_task').value;
-  let woNumber = card.querySelector('.wo_number').value;
-  let company = card.querySelector('.company').value;
-  let reasonCode = card.querySelector('.reason_code').value;
-  let woRemark = card.querySelector('.wo_remark').value;
-  let taFeedback = card.querySelector('.editable-feedback').value;
+  let card = button.closest(".card-edit-data");
+  let id_task = card.querySelector(".id_task").value;
+  let woNumber = card.querySelector(".wo_number").value;
+  let company = card.querySelector(".company").value;
+  let reasonCode = card.querySelector(".reason_code").value;
+  let woRemark = card.querySelector(".wo_remark").value;
+  let taFeedback = card.querySelector(".editable-feedback").value;
 
   Swal.fire({
     icon: "warning",
@@ -2255,7 +2308,14 @@ async function sendEditData(button) {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRemark, taFeedback);
+      modalFormEditDataWO(
+        id_task,
+        woNumber,
+        company,
+        reasonCode,
+        woRemark,
+        taFeedback
+      );
     }
   });
 }
@@ -2263,15 +2323,22 @@ async function sendEditData(button) {
 async function handleHashChange() {
   const hash = window.location.hash;
 
-  if (hash.includes('data-error')) {
+  if (hash.includes("data-error")) {
     return "error";
-  } else if (hash.includes('data-pending')) {
+  } else if (hash.includes("data-pending")) {
     return "pending";
   }
 }
 
-async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRemark, taFeedback) {
-  let modal = document.querySelector('.modal.show');
+async function modalFormEditDataWO(
+  id_task,
+  woNumber,
+  company,
+  reasonCode,
+  woRemark,
+  taFeedback
+) {
+  let modal = document.querySelector(".modal.show");
   if (modal) {
     modal.setAttribute("inert", ""); // Prevent interactions, but keep it visible
   }
@@ -2280,7 +2347,7 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
   let currentTab = await handleHashChange();
 
   // Run on hash change (when user switches tab)
-  $(window).on('hashchange', function () {
+  $(window).on("hashchange", function () {
     currentTab = handleHashChange();
   });
 
@@ -2314,7 +2381,10 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
       <div class="row align-items-center gx-3 gy-2">
         <!-- Paid Checkbox -->
         
-        ${paidCheckbox || '<div class="col-lg-2 col-md-6 col-sm-6 d-flex align-items-center"></div>'}
+        ${
+          paidCheckbox ||
+          '<div class="col-lg-2 col-md-6 col-sm-6 d-flex align-items-center"></div>'
+        }
 
         <!-- Task ID -->
         <div class="col-lg-2 col-md-6 col-sm-6">
@@ -2358,39 +2428,64 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
           <textarea id="edit-data-keterangan" class="form-control" placeholder="Input keterangan JO / WO Remark" rows="3">${woRemark}</textarea>
         </div>
 
+        <!-- Supply Thermal -->
+        <div class="col-12">
+          <label for="edit-data-supply-thermal" class="form-label">Supply Thermal</label>
+          <input 
+            type="number" 
+            id="edit-data-supply-thermal" 
+            class="form-control" 
+            placeholder="Masukkan jumlah supply thermal" 
+            min="0" 
+            max="3000">
+        </div>
+
         <!-- File Uploads with Preview -->
         <div class="col-12">
           <label class="form-label fw-bold">Upload Foto</label>
           <div class="row gx-2 gy-2">
             ${[
-        { id: "x_foto_bast", label: "Foto BAST" },
-        { id: "x_foto_ceklis", label: "Foto Media Promo" },
-        { id: "x_foto_edc", label: "Foto SN EDC" },
-        { id: "x_foto_pic", label: "Foto PIC Merchant" },
-        { id: "x_foto_setting", label: "Foto Pengaturan" },
-        { id: "x_foto_thermal", label: "Foto Thermal" },
-        { id: "x_foto_toko", label: "Foto Merchant" },
-        { id: "x_foto_training", label: "Foto Surat Training" },
-        { id: "x_foto_transaksi", label: "Foto Transaksi" },
-        { id: "x_tanda_tangan_pic", label: "Tanda Tangan PIC" },
-        { id: "x_tanda_tangan_teknisi", label: "Tanda Tangan Teknisi" },
-        { id: "x_foto_sticker_edc", label: "Foto Stiker EDC" },
-        { id: "x_foto_screen_guard", label: "Foto Screen Gard" },
-        { id: "x_foto_all_transaction", label: "Foto Sales Draft All Memberbank" },
-        { id: "x_foto_transaksi_bmri", label: "Foto Sales Draft BMRI" },
-        { id: "x_foto_transaksi_bni", label: "Foto Sales Draft BNI" },
-        { id: "x_foto_transaksi_bri", label: "Foto Sales Draft BRI" },
-        { id: "x_foto_transaksi_btn", label: "Foto Sales Draft BTN" },
-        { id: "x_foto_transaksi_patch", label: "Foto Sales Draft Patch L" },
-        { id: "x_foto_screen_p2g", label: "Foto Screen P2G" },
-        { id: "x_foto_kontak_stiker_pic", label: "Foto Kontak Stiker PIC" }
-      ].map(({ id, label }) => `
+              { id: "x_foto_bast", label: "Foto BAST" },
+              { id: "x_foto_ceklis", label: "Foto Media Promo" },
+              { id: "x_foto_edc", label: "Foto SN EDC" },
+              { id: "x_foto_pic", label: "Foto PIC Merchant" },
+              { id: "x_foto_setting", label: "Foto Pengaturan" },
+              { id: "x_foto_thermal", label: "Foto Thermal" },
+              { id: "x_foto_toko", label: "Foto Merchant" },
+              { id: "x_foto_training", label: "Foto Surat Training" },
+              { id: "x_foto_transaksi", label: "Foto Transaksi" },
+              { id: "x_tanda_tangan_pic", label: "Tanda Tangan PIC" },
+              { id: "x_tanda_tangan_teknisi", label: "Tanda Tangan Teknisi" },
+              { id: "x_foto_sticker_edc", label: "Foto Stiker EDC" },
+              { id: "x_foto_screen_guard", label: "Foto Screen Gard" },
+              {
+                id: "x_foto_all_transaction",
+                label: "Foto Sales Draft All Memberbank",
+              },
+              { id: "x_foto_transaksi_bmri", label: "Foto Sales Draft BMRI" },
+              { id: "x_foto_transaksi_bni", label: "Foto Sales Draft BNI" },
+              { id: "x_foto_transaksi_bri", label: "Foto Sales Draft BRI" },
+              { id: "x_foto_transaksi_btn", label: "Foto Sales Draft BTN" },
+              {
+                id: "x_foto_transaksi_patch",
+                label: "Foto Sales Draft Patch L",
+              },
+              { id: "x_foto_screen_p2g", label: "Foto Screen P2G" },
+              {
+                id: "x_foto_kontak_stiker_pic",
+                label: "Foto Kontak Stiker PIC",
+              },
+            ]
+              .map(
+                ({ id, label }) => `
               <div class="col-md-4">
                 <label for="edit-data-${id}" class="form-label">${label}</label>
                 <input type="file" class="form-control" id="edit-data-${id}" accept="image/*" onchange="previewImage(event, '${id}')">
                 <img id="preview-${id}" src="" alt="Preview" class="img-thumbnail mt-2 d-none" style="max-width: 100px;">
               </div>
-            `).join("")}
+            `
+              )
+              .join("")}
           </div>
         </div>
       </div>
@@ -2424,7 +2519,9 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
           reasonSelect.empty(); // Clear existing options
 
           // Default option
-          reasonSelect.append('<option value="" disabled selected>Pilih reason code yang sesuai</option>');
+          reasonSelect.append(
+            '<option value="" disabled selected>Pilih reason code yang sesuai</option>'
+          );
 
           // Convert reasonCode to lowercase for case-insensitive comparison
           let reasonCodeLower = reasonCode.toLowerCase();
@@ -2436,7 +2533,7 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
             let option = $("<option>", {
               value: id,
               text: label,
-              selected: reasonCodeLower === labelLower // Set selected if it matches
+              selected: reasonCodeLower === labelLower, // Set selected if it matches
             });
 
             reasonSelect.append(option);
@@ -2448,9 +2545,9 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
             icon: "error",
             title: "Oops...",
             text: "Gagal mengambil Reason Codes! Coba lagi.",
-            footer: `<small>Error: ${xhr.status} - ${error}</small>`
+            footer: `<small>Error: ${xhr.status} - ${error}</small>`,
           });
-        }
+        },
       });
     },
     preConfirm: () => {
@@ -2460,10 +2557,13 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
       let reason = document.getElementById("edit-data-reason").value;
       let keterangan = document.getElementById("edit-data-keterangan").value;
       let feedback = document.getElementById("edit-feedback").value;
+      let supplyThermal = document.getElementById(
+        "edit-data-supply-thermal"
+      ).value;
       feedback = feedback.trim();
       let isPaid = false;
-      if ($('#edit-data-status').length) {
-        isPaid = $('#edit-data-status').is(':checked');
+      if ($("#edit-data-status").length) {
+        isPaid = $("#edit-data-status").is(":checked");
       }
 
       console.log("Paid Status: " + isPaid);
@@ -2480,7 +2580,7 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
           tabel: currentTab,
           id_task: id_task,
           wo_number: woNumber,
-          feedback: feedback
+          feedback: feedback,
         }),
         success: function (res) {
           console.log(res);
@@ -2490,15 +2590,15 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
           try {
             const res = JSON.parse(xhr.responseText);
             msg = res.message || msg;
-          } catch (e) { }
+          } catch (e) {}
 
           Swal.fire({
             icon: "error",
             title: "Gagal!",
             text: msg,
-            confirmButtonText: "Coba Lagi"
+            confirmButtonText: "Coba Lagi",
           });
-        }
+        },
       });
 
       /**
@@ -2527,11 +2627,11 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
         "edit-data-x_foto_transaksi_btn",
         "edit-data-x_foto_transaksi_patch",
         "edit-data-x_foto_screen_p2g",
-        "edit-data-x_foto_kontak_stiker_pic"
+        "edit-data-x_foto_kontak_stiker_pic",
       ];
 
       let files = {};
-      fileIds.forEach(id => {
+      fileIds.forEach((id) => {
         let fileInput = document.getElementById(id);
         if (fileInput && fileInput.files.length > 0) {
           files[id.replace("edit-data-", "")] = fileInput.files[0];
@@ -2539,12 +2639,23 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
       });
 
       if (!name || !password || !task || !reason || !keterangan) {
-        Swal.showValidationMessage("Alamat email, password, ID task, reason code dan keterangan / wo remark harus diisi!");
+        Swal.showValidationMessage(
+          "Alamat email, password, ID task, reason code dan keterangan / wo remark harus diisi!"
+        );
         return false;
       }
 
-      return { name, password, task, reason, keterangan, files, isPaid };
-    }
+      return {
+        name,
+        password,
+        task,
+        reason,
+        keterangan,
+        files,
+        isPaid,
+        supplyThermal,
+      };
+    },
   });
 
   if (modal) {
@@ -2552,6 +2663,19 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
   }
 
   if (formValues) {
+    const thermalValue = Number(formValues.supplyThermal);
+
+    if (thermalValue > 3000) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Jumlah Supply Thermal terlalu besar!",
+        text: "Maksimum jumlah supply thermal adalah 3000.",
+        confirmButtonText: "OK",
+      });
+      return; // stop execution
+    }
+
+    // Build formData once
     let formData = new FormData();
     formData.append("name", formValues.name);
     formData.append("password", formValues.password);
@@ -2560,82 +2684,82 @@ async function modalFormEditDataWO(id_task, woNumber, company, reasonCode, woRem
     formData.append("keterangan", formValues.keterangan);
     formData.append("isPaid", formValues.isPaid);
 
+    if (formValues.supplyThermal !== "" && thermalValue > 0) {
+      formData.append("thermal", formValues.supplyThermal);
+    }
+
     // Append all selected files
-    Object.keys(formValues.files).forEach(key => {
+    Object.keys(formValues.files).forEach((key) => {
       formData.append(key, formValues.files[key]);
     });
 
     // Show processing alert
     Swal.fire({
       title: "Processing...",
-      text: "Saving data...",
+      text: "Mohon bersabar, system sedang mengolah data yang telah Anda update",
       allowOutsideClick: false,
       allowEscapeKey: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10 * 60 * 1000);
+      const timeout = setTimeout(() => controller.abort(), 10 * 60 * 1000); // 10 minutes
 
       let response = await fetch("/here/editData", {
         method: "POST",
         body: formData,
-        signal: controller.signal, // Attach timeout signal
+        signal: controller.signal,
       });
 
-      clearTimeout(timeout); // Clear timeout if fetch completes successfully
+      clearTimeout(timeout);
 
-      let result = await response.text(); // Read response as text first
+      let resultText = await response.text();
 
+      let result;
       try {
-        result = JSON.parse(result); // Try to parse JSON if possible
+        result = JSON.parse(resultText);
       } catch (e) {
-        // If parsing fails, result is a single string, so show it directly
-        Swal.fire({
+        await Swal.fire({
           title: "Response",
-          text: result, // Show raw string response
+          text: resultText,
           icon: "info",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
         });
         return;
       }
 
-      // If result is an object, check if it contains a 'message' key
       let responseMessage = result.message
         ? result.message
-        : Object.values(result).join("\n"); // Join all values if 'message' key is not found
+        : Object.values(result).join("\n");
 
       Swal.fire({
         title: "Success!",
         text: responseMessage,
         icon: "success",
         timer: 5000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
 
       setTimeout(() => {
         window.location.reload();
       }, 4000);
-
     } catch (error) {
       console.error("Error:", error);
-
-      let errorMessage = error.name === "AbortError"
-        ? "Request timed out! Please try again."
-        : error.message || "Failed to save data. Please try again.";
+      let errorMessage =
+        error.name === "AbortError"
+          ? "Request timed out! Please try again."
+          : error.message || "Failed to save data. Please try again.";
 
       Swal.fire({
         title: "Error!",
         text: errorMessage,
         icon: "error",
-        confirmButtonText: "Try Again"
+        confirmButtonText: "Try Again",
       });
     }
-
-
   }
 }
 
@@ -2682,32 +2806,32 @@ function showImageModal(imgSrc, title) {
     showCloseButton: true,
     allowOutsideClick: false,
     allowEscapeKey: false,
-    width: 'auto',
+    width: "auto",
     customClass: {
-      popup: 'border-0 shadow rounded'
-    }
+      popup: "border-0 shadow rounded",
+    },
   });
   window.currentZoom = 1;
 }
 
 function zoomImage(factor) {
-  const img = document.getElementById('zoomable-img');
+  const img = document.getElementById("zoomable-img");
   window.currentZoom = (window.currentZoom || 1) * factor;
   window.currentZoom = Math.min(Math.max(window.currentZoom, 0.5), 5);
-  img.style.transform = 'scale(' + window.currentZoom + ')';
+  img.style.transform = "scale(" + window.currentZoom + ")";
 }
 
 function editFeedback(el, tabel, idTask, woNumber, endpoint) {
   // Close any open Bootstrap modals
-  document.querySelectorAll('.modal.show').forEach(modalEl => {
+  document.querySelectorAll(".modal.show").forEach((modalEl) => {
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
     if (modalInstance) {
       modalInstance.hide();
     } else {
-      modalEl.classList.remove('show');
-      modalEl.style.display = 'none';
-      document.body.classList.remove('modal-open');
-      document.querySelector('.modal-backdrop')?.remove();
+      modalEl.classList.remove("show");
+      modalEl.style.display = "none";
+      document.body.classList.remove("modal-open");
+      document.querySelector(".modal-backdrop")?.remove();
     }
   });
 
@@ -2718,18 +2842,18 @@ function editFeedback(el, tabel, idTask, woNumber, endpoint) {
   setTimeout(() => {
     Swal.fire({
       title: `<span class="badge bg-label-secondary" style="font-size: 0.75rem; vertical-align: middle;">${idTask}</span> Feedback untuk WO Number: ${woNumber}`,
-      input: 'textarea',
-      inputLabel: 'Masukkan feedback',
+      input: "textarea",
+      inputLabel: "Masukkan feedback",
       inputValue: currentVal,
       showCancelButton: true,
-      confirmButtonText: 'Simpan',
-      cancelButtonText: 'Batal',
+      confirmButtonText: "Simpan",
+      cancelButtonText: "Batal",
       allowOutsideClick: false,
       allowEscapeKey: false,
       customClass: {
-        popup: 'rounded',
-        confirmButton: 'btn btn-primary',
-        cancelButton: 'btn btn-secondary ms-2'
+        popup: "rounded",
+        confirmButton: "btn btn-primary",
+        cancelButton: "btn btn-secondary ms-2",
       },
       buttonsStyling: false,
       preConfirm: (newVal) => {
@@ -2751,7 +2875,7 @@ function editFeedback(el, tabel, idTask, woNumber, endpoint) {
               tabel: tabel,
               id_task: idTask,
               wo_number: woNumber,
-              feedback: newVal
+              feedback: newVal,
             }),
             success: function (res) {
               // Update textarea value and data attribute
@@ -2769,21 +2893,21 @@ function editFeedback(el, tabel, idTask, woNumber, endpoint) {
               try {
                 const res = JSON.parse(xhr.responseText);
                 msg = res.message || msg;
-              } catch (e) { }
+              } catch (e) {}
 
               Swal.hideLoading();
               Swal.showValidationMessage(msg);
               reject();
-            }
+            },
           });
         });
-      }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        const message = result.value?.message || 'Feedback berhasil disimpan';
+        const message = result.value?.message || "Feedback berhasil disimpan";
 
         // Reload the DataTable that contains el
-        const $table = $('table.dt_teknisi_pengerjaan_' + tabel);
+        const $table = $("table.dt_teknisi_pengerjaan_" + tabel);
         if ($table.length) {
           const dtInstance = $table.DataTable();
           if (dtInstance) {
@@ -2792,10 +2916,10 @@ function editFeedback(el, tabel, idTask, woNumber, endpoint) {
         }
 
         Swal.fire({
-          icon: 'success',
+          icon: "success",
           title: message,
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
       }
     });
@@ -2803,9 +2927,19 @@ function editFeedback(el, tabel, idTask, woNumber, endpoint) {
 }
 
 function openPopupPhotos(id, table) {
+  // Photos
   window.open(
-    '/photos/' + id + '?table=' + table,
-    'popupWindow',
-    'width=400,height=700,top=20,right=20,left=' + (window.screen.width - 420) + ',scrollbars=yes,resizable=yes'
+    "/photos/" + id + "?table=" + table,
+    "popupWindowRight",
+    "width=400,height=700,top=20,left=" +
+      (window.screen.width - 420) +
+      ",scrollbars=yes,resizable=yes"
+  );
+
+  // Additional data
+  window.open(
+    "/ta_additional_data/" + id,
+    "popupWindowLeft",
+    "width=400,height=700,top=20,left=20,scrollbars=yes,resizable=yes"
   );
 }

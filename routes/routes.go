@@ -102,6 +102,7 @@ func HtmlRoutes(router *gin.Engine, db *gorm.DB, db_call_center *gorm.DB, db_pen
 	// Photos
 	// To read an "id" from the query string, use c.Query("id") in the controller and read the table data using query table
 	router.GET(fun.GLOBAL_URL+"photos/:id", controllers.ShowPhotoByID(redisDB, db_pengerjaan))
+	router.GET(fun.GLOBAL_URL+"ta_additional_data/:id", controllers.ShowAdditionalDataByID(redisDB, db_pengerjaan))
 
 	// router.GET(fun.GLOBAL_URL+"", controllers.GetWebLandingPage(db)) // LANDING PAGE
 	router.GET(fun.GLOBAL_URL, func(c *gin.Context) { c.Redirect(http.StatusPermanentRedirect, fun.GLOBAL_URL+"login") })

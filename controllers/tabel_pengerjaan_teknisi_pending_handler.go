@@ -232,10 +232,10 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 		// 	"Foto Screen P2G",
 		// 	"Foto Kontak Stiker PIC",
 		// }
-		for _, person := range Teknisis {
+		for _, dbData := range Teknisis {
 			newData := make(map[string]interface{})
 
-			v := reflect.ValueOf(person)
+			v := reflect.ValueOf(dbData)
 
 			// Data for using in JS
 			var id_task, woNumber, company, reasonCode, woRemark, taFeedbackValue string
@@ -373,7 +373,7 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 							`
 							<div class="card-cek">
 								<button class="btn btn-sm btn-info" onclick="openPopupPhotos('%s', 'pending')">
-									<i class='bx bx-image-alt me-2'></i> Lihat Foto
+									<i class='bx bx-image-alt me-2'></i> Lihat Foto & Tambahan Data
 								</button>
 							</div>
 							`, id_task,
