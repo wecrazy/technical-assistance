@@ -884,6 +884,9 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 		"Foto Sales Draft Patch L":        "x_foto_transaksi_patch",
 		"Foto Screen P2G":                 "x_foto_screen_p2g",
 		"Foto Kontak Stiker PIC":          "x_foto_kontak_stiker_pic",
+
+		"Foto Selfie Video Call":           "x_foto_selfie_video_call",
+		"Foto Selfie Teknisi dan Merchant": "x_foto_selfie_teknisi_merchant",
 	}
 
 	// Pending Sheet
@@ -931,6 +934,8 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 		{"AI", "Foto Sales Draft Patch L", 35},
 		{"AJ", "Foto Screen P2G", 35},
 		{"AK", "Foto Kontak Stiker PIC", 35},
+		{"AL", "Foto Selfie Video Call", 35},
+		{"AM", "Foto Selfie Teknisi dan Merchant", 35},
 	}
 	// Header setup
 	for _, col := range pendingColumns {
@@ -1053,6 +1058,8 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 		{"AJ", "Foto Sales Draft Patch L", 35},
 		{"AK", "Foto Screen P2G", 35},
 		{"AL", "Foto Kontak Stiker PIC", 35},
+		{"AM", "Foto Selfie Video Call", 35},
+		{"AN", "Foto Selfie Teknisi dan Merchant", 35},
 	}
 
 	// Header setup
@@ -2797,6 +2804,8 @@ func GenerateTAComparedReport(db *gorm.DB) (string, string, error) {
 		{"Foto Sales Draft Patch L", 35},
 		{"Foto Screen P2G", 35},
 		{"Foto Kontak Stiker PIC", 35},
+		{"Foto Selfie Video Call", 35},
+		{"Foto Selfie Teknisi dan Merchant", 35},
 	}
 
 	var columns []Column
@@ -2856,6 +2865,9 @@ func GenerateTAComparedReport(db *gorm.DB) (string, string, error) {
 		"Foto Sales Draft Patch L":        "x_foto_transaksi_patch",
 		"Foto Screen P2G":                 "x_foto_screen_p2g",
 		"Foto Kontak Stiker PIC":          "x_foto_kontak_stiker_pic",
+
+		"Foto Selfie Video Call":           "x_foto_selfie_video_call",
+		"Foto Selfie Teknisi dan Merchant": "x_foto_selfie_teknisi_merchant",
 	}
 
 	if len(errorData) > 0 {

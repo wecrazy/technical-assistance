@@ -518,6 +518,8 @@ func TabelDataFotoError(db *gorm.DB) gin.HandlerFunc {
 			"x_foto_transaksi_patch",
 			"x_foto_screen_p2g",
 			"x_foto_kontak_stiker_pic",
+
+			"x_foto_selfie_video_call", "x_foto_selfie_teknisi_merchant",
 		}
 
 		judul_foto := []string{"Foto BAST",
@@ -543,6 +545,8 @@ func TabelDataFotoError(db *gorm.DB) gin.HandlerFunc {
 			"Foto Sales Draft Patch L",
 			"Foto Screen P2G",
 			"Foto Kontak Stiker PIC",
+
+			"Foto Selfie Video Call", "Foto Selfie Teknisi dan Merchant",
 		}
 
 		var data []gin.H

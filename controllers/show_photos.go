@@ -75,6 +75,7 @@ func ShowPhotoByID(redisDB *redis.Client, db_pengerjaan *gorm.DB) gin.HandlerFun
 			"x_foto_transaksi_bmri", "x_foto_transaksi_bni", "x_foto_transaksi_bri",
 			"x_foto_transaksi_btn", "x_foto_transaksi_patch", "x_foto_screen_p2g",
 			"x_foto_kontak_stiker_pic",
+			"x_foto_selfie_video_call", "x_foto_selfie_teknisi_merchant",
 		}
 
 		judul_foto := []string{
@@ -85,6 +86,7 @@ func ShowPhotoByID(redisDB *redis.Client, db_pengerjaan *gorm.DB) gin.HandlerFun
 			"Foto Sales Draft BMRI", "Foto Sales Draft BNI", "Foto Sales Draft BRI",
 			"Foto Sales Draft BTN", "Foto Sales Draft Patch L", "Foto Screen P2G",
 			"Foto Kontak Stiker PIC",
+			"Foto Selfie Video Call", "Foto Selfie Teknisi dan Merchant",
 		}
 
 		var html strings.Builder

@@ -2475,6 +2475,9 @@ async function modalFormEditDataWO(
                 id: "x_foto_kontak_stiker_pic",
                 label: "Foto Kontak Stiker PIC",
               },
+
+              {id: "x_foto_selfie_video_call", label: "Foto Selfie Video Call"},
+              {id: "x_foto_selfie_teknisi_merchant", label: "Foto Selfie Teknisi dan Merchant"},
             ]
               .map(
                 ({ id, label }) => `
@@ -2628,6 +2631,9 @@ async function modalFormEditDataWO(
         "edit-data-x_foto_transaksi_patch",
         "edit-data-x_foto_screen_p2g",
         "edit-data-x_foto_kontak_stiker_pic",
+
+        "edit-data-x_foto_selfie_video_call",
+        "edit-data-x_foto_selfie_teknisi_merchant",
       ];
 
       let files = {};
