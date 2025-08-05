@@ -320,6 +320,7 @@ var taData = map[string]string{
 	"mukti@csnams.com":                     "Technical Assistance 5 - Arif Arya M.",
 	"abdu@csnams.com":                      "Technical Assistance 6 - Abdu",
 	"iin_inayah@smartwebindonesia.com":     "Technical Assistance 7 - Iin",
+	"triyanawirda910@gmail.com":            "Technical Assistance 8 - Wiwi",
 	"callcenter@gmail.com":                 "Team Call Center",
 	"tetty@csnams.com":                     "HEAD - Tetty Manurung",
 	"sri_t@smartwebindonesia.com":          "Assistant - Sri",
@@ -2353,7 +2354,8 @@ func GenerateTAComparedReport(db *gorm.DB) (string, string, error) {
 	// endOfDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, now.Location()).Add(-7 * time.Hour)
 
 	// Calculate the first day of two months ago at 01:00:00
-	startOfDay := time.Date(now.Year(), now.Month()-2, 1, 1, 0, 0, 0, now.Location()).Add(-7 * time.Hour)
+	// startOfDay := time.Date(now.Year(), now.Month()-2, 1, 1, 0, 0, 0, now.Location()).Add(-7 * time.Hour)
+	startOfDay := time.Date(now.Year(), now.Month()-1, 1, 1, 0, 0, 0, now.Location()).Add(-7 * time.Hour)
 	// Calculate the last day of the current month at 23:59:59
 	endOfDay := time.Date(now.Year(), now.Month()+1, 0, 23, 59, 59, 0, now.Location()).Add(-7 * time.Hour)
 	// Format to "2006-01-02 15:04:05"
