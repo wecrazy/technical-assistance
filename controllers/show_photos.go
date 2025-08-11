@@ -259,6 +259,7 @@ func getAdditionalDatafromEndpointKukuh(idTask string) (map[string]interface{}, 
 			{Name: "x_kanwil", Type: "string"},
 
 			{Name: "x_history", Type: "string"},
+			{Name: "x_software_version", Type: "string"},
 			// {Name: "x_studio_edc", Type: "array", Index: 1},
 			// {Name: "active", Type: "boolean"},
 			// {Name: "fsm_task_count", Type: "integer"},
@@ -343,7 +344,8 @@ func ShowAdditionalDataByID(redisDB *redis.Client, db_pengerjaan *gorm.DB) gin.H
 			"x_supply_thermal": "Thermal Paper Supply",
 			"x_kanwil":         "Wajib Supply Thermal",
 
-			"x_history": "Versi APK FS",
+			"x_history":          "Versi APK FS",
+			"x_software_version": "Tanggal Visit Re-Schedule",
 		}
 
 		var orderedKeys = []string{
@@ -364,6 +366,7 @@ func ShowAdditionalDataByID(redisDB *redis.Client, db_pengerjaan *gorm.DB) gin.H
 			"x_kanwil",
 
 			"x_history",
+			"x_software_version",
 		}
 
 		// Build HTML

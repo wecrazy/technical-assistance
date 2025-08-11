@@ -309,6 +309,7 @@ var taData = map[string]string{
 	// "monitoringteknisi@gmail.com":          "Technical Assistance 9 - Steven",
 	// "yudha@csnams.com":                     "Technical Assistance 3 - M Angga Yudha",
 	// "thessalonica_a@smartwebindonesia.com": "Assistant - Thessa",
+	// "abdu@csnams.com":                      "Technical Assistance 6 - Abdu",
 	"wegirandol@smartwebindonesia.com":     "Dev RM",
 	"admin@swi.com":                        "Administrator",
 	"testmfjr@gmail.com":                   "Tes Dev Mfjr",
@@ -318,9 +319,8 @@ var taData = map[string]string{
 	"thessalonica_a@smartwebindonesia.com": "Technical Assistance 3 - Thessa",
 	"suhendrik.180189@gmail.com":           "Technical Assistance 4 - Suhendrik Zakaria",
 	"mukti@csnams.com":                     "Technical Assistance 5 - Arif Arya M.",
-	"abdu@csnams.com":                      "Technical Assistance 6 - Abdu",
+	"triyanawirda910@gmail.com":            "Technical Assistance 6 - Wiwi",
 	"iin_inayah@smartwebindonesia.com":     "Technical Assistance 7 - Iin",
-	"triyanawirda910@gmail.com":            "Technical Assistance 8 - Wiwi",
 	"callcenter@gmail.com":                 "Team Call Center",
 	"tetty@csnams.com":                     "HEAD - Tetty Manurung",
 	"sri_t@smartwebindonesia.com":          "Assistant - Sri",
@@ -672,9 +672,9 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 	f.NewSheet(pivotSheet)
 	f.SetColWidth(pivotSheet, "A", "A", 42)
 
-	f.AddPivotTable(&excelize.PivotTableOptions{
+	if err := f.AddPivotTable(&excelize.PivotTableOptions{
 		DataRange:       pivotDataRange,
-		PivotTableRange: pivotSheet + "!A1:J200",
+		PivotTableRange: pivotSheet + "!A1:J20",
 		Rows: []excelize.PivotTableField{
 			{Data: "TA", Name: "TA"},
 		},
@@ -685,15 +685,18 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 		Data: []excelize.PivotTableField{
 			{Data: "WO Number", Name: fmt.Sprintf("Count of TA Activity @%v", now.Add(7*time.Hour).Format("02/Jan/2006 15:04:05")), Subtotal: "count"},
 		},
-		PivotTableStyleName: "PivotStyleLight20",
-		RowGrandTotals:      true,
-		ColGrandTotals:      true,
-		ShowDrill:           true,
-		ShowRowHeaders:      true,
-		ShowColHeaders:      true,
-		ShowLastColumn:      true,
+		// PivotTableStyleName: "PivotStyleLight20",
+		RowGrandTotals: true,
+		ColGrandTotals: true,
+		ShowDrill:      true,
+		ShowRowHeaders: true,
+		ShowColHeaders: true,
+		ShowLastColumn: true,
 		// ShowColStripes:      true,
-	})
+	}); err != nil {
+		log.Println("Error adding pivot table:", err)
+	}
+
 	// Notes in PIVOT
 	// Only the date part is bold, the rest is normal
 	noteText := "*Note: Date in Dashboard "
@@ -751,9 +754,19 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 	f.SetCellValue(pivotSheet, "L3", totalPendingLeft)
 	f.SetCellValue(pivotSheet, "L4", totalErrorLeft)
 	f.SetCellValue(pivotSheet, "L5", totalFollowedUp)
-	f.SetCellFormula(pivotSheet, "L6", "=SUM(L3:L5)")
 	f.SetCellValue(pivotSheet, "L7", totalTAStandBy)
-	f.SetCellFormula(pivotSheet, "L8", "=L5/L6")
+
+	formulaL6 := fmt.Sprintf("=SUM(%s:%s)", "L3", "L5")
+	formulaL6 = strings.ReplaceAll(formulaL6, "==", "=")
+	if err := f.SetCellFormula(pivotSheet, "L6", formulaL6); err != nil {
+		log.Println(err)
+	}
+
+	formulaL8 := fmt.Sprintf("=IF(%s=0,0,%s/%s)", "L6", "L5", "L6")
+	formulaL8 = strings.ReplaceAll(formulaL8, "==", "=")
+	if err := f.SetCellFormula(pivotSheet, "L8", formulaL8); err != nil {
+		log.Println(err)
+	}
 
 	styleBold, _ := f.NewStyle(&excelize.Style{
 		Font: &excelize.Font{
