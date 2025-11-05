@@ -22,6 +22,7 @@ type LogAct struct {
 	DateOnCheck     *time.Time `gorm:"column:date_on_check" json:"date_on_check"`
 	DateInDashboard string     `gorm:"column:date_in_dashboard" json:"date_in_dashboard"`
 	TaFeedback      string     `gorm:"column:ta_feedback" json:"ta_feedback"`
+	LogEdit         string     `gorm:"column:log_edit;type:text" json:"log_edit"`
 }
 
 func (LogAct) TableName() string {

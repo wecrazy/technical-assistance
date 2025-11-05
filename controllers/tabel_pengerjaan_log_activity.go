@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"reflect"
 	"strings"
 	"ta_csna/fun"
@@ -57,6 +58,7 @@ func TabelPengerjaanLogActivity(db *gorm.DB) gin.HandlerFunc {
 
 		// Initial query for filtering
 		filteredQuery := db.Model(&op_model.LogAct{})
+		woDetailURL := os.Getenv("WO_DETAIL_URL")
 
 		// // Apply filters
 		if request.Search != "" {
@@ -98,7 +100,7 @@ func TabelPengerjaanLogActivity(db *gorm.DB) gin.HandlerFunc {
 				if jsonKey == "" {
 					continue
 				}
-				if dataType != "string" {
+				if dataType != "string" && dataType != "*string" {
 					continue
 				}
 				// fmt.Printf("Variable Name: %s, Data Type: %s, JSON Key: %s, GORM Column Key: %s\n", varName, dataType, jsonKey, columnKey)
@@ -110,13 +112,45 @@ func TabelPengerjaanLogActivity(db *gorm.DB) gin.HandlerFunc {
 		} else {
 			for i := 0; i < t.NumField(); i++ {
 				field := t.Field(i)
-				formKey := field.Tag.Get("form")
+				// formKey := field.Tag.Get("form")
+				formKey := field.Tag.Get("json")
 				if formKey == "" || formKey == "-" {
 					continue
 				}
 				formValue := c.PostForm(formKey)
 				if formValue != "" {
-					filteredQuery = filteredQuery.Debug().Or("`"+formKey+"` LIKE ?", "%"+formValue+"%")
+					isHandled := false
+
+					if strings.Contains(formValue, " to ") {
+						// Attempt to parse date range
+						dates := strings.Split(formValue, " to ")
+						if len(dates) == 2 {
+							from, err1 := time.Parse("02/01/2006", strings.TrimSpace(dates[0]))
+							to, err2 := time.Parse("02/01/2006", strings.TrimSpace(dates[1]))
+							if err1 == nil && err2 == nil {
+								filteredQuery = filteredQuery.Debug().Where(
+									"DATE(`"+formKey+"`) BETWEEN ? AND ?",
+									from.Format("2006-01-02"),
+									to.Format("2006-01-02"),
+								)
+								isHandled = true
+							}
+						}
+					} else {
+						// Attempt to parse single date
+						if date, err := time.Parse("02/01/2006", formValue); err == nil {
+							filteredQuery = filteredQuery.Debug().Where(
+								"DATE(`"+formKey+"`) = ?",
+								date.Format("2006-01-02"),
+							)
+							isHandled = true
+						}
+					}
+
+					if !isHandled {
+						// Fallback to LIKE if no valid date
+						filteredQuery = filteredQuery.Debug().Where("`"+formKey+"` LIKE ?", "%"+formValue+"%")
+					}
 				}
 			}
 
@@ -191,116 +225,139 @@ func TabelPengerjaanLogActivity(db *gorm.DB) gin.HandlerFunc {
 
 				// Handle time.Time fields differently
 				if fieldValue.Type() == reflect.TypeOf(time.Time{}) {
-					if theKey == "birthdate" {
+					switch theKey {
+					case "birthdate":
 						newData[theKey] = fieldValue.Interface().(time.Time).Format(fun.T_YYYYMMDD)
-					} else if theKey == "date" {
+					case "date":
 						newData[theKey] = fieldValue.Interface().(time.Time).
 							Add(7 * time.Hour).
 							Format(fun.T_YYYYMMDD_HHmmss)
-					} else {
+					default:
 						newData[theKey] = fieldValue.Interface().(time.Time).Format(fun.T_YYYYMMDD_HHmmss)
 					}
-				} else if theKey == "time_start" || theKey == "time_stop" {
-					layout := "2006-01-02 15:04:05"
-					parsedTime, err := time.Parse(layout, fieldValue.Interface().(string))
-					if err == nil {
-						newData[theKey] = parsedTime.Add(7 * time.Hour).Format(layout)
-					} else {
+				} else {
+					switch theKey {
+					case "time_start", "time_stop":
+						layout := "2006-01-02 15:04:05"
+						parsedTime, err := time.Parse(layout, fieldValue.Interface().(string))
+						if err == nil {
+							newData[theKey] = parsedTime.Add(7 * time.Hour).Format(layout)
+						} else {
+							newData[theKey] = fieldValue.Interface().(string)
+						}
+					case "id_task":
+						id_task = fieldValue.Interface().(string)
 						newData[theKey] = fieldValue.Interface().(string)
-					}
-				} else if theKey == "id_task" {
-					id_task = fieldValue.Interface().(string)
-					newData[theKey] = fieldValue.Interface().(string)
-				} else if theKey == "wo" {
-					if fieldValue.Kind() == reflect.Ptr {
-						if fieldValue.IsNil() {
-							newData[theKey] = "" // Set empty if nil pointer
-						} else {
-							// Dereference the pointer safely
-							strValue := reflect.Indirect(fieldValue).Interface().(string)
-							if strValue != "" {
-								woNumber := strValue
-								newData[theKey] = fmt.Sprintf(
-									`<a href="http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%v" target="_blank">%v</a>`,
-									woNumber, woNumber,
-								)
+					case "wo":
+						if fieldValue.Kind() == reflect.Ptr {
+							if fieldValue.IsNil() {
+								newData[theKey] = "" // Set empty if nil pointer
 							} else {
-								newData[theKey] = "" // Set empty if string is empty
-							}
-						}
-					} else {
-						// If it's NOT a pointer, check if it's a string
-						if fieldValue.Kind() == reflect.String {
-							strValue := fieldValue.Interface().(string)
-							if strValue != "" {
-								woNumber := strValue
-								newData[theKey] = fmt.Sprintf(
-									`<a href="http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%v" target="_blank">%v</a>`,
-									woNumber, woNumber,
-								)
-							} else {
-								newData[theKey] = "" // Set empty if string is empty
+								// Dereference the pointer safely
+								strValue := reflect.Indirect(fieldValue).Interface().(string)
+								if strValue != "" {
+									woNumber := strValue
+									newData[theKey] = fmt.Sprintf(
+										`<a href="%s/odooms-project-task/detailWO?wo_number=%v" target="_blank">%v</a>`,
+										woDetailURL, woNumber, woNumber,
+									)
+								} else {
+									newData[theKey] = "" // Set empty if string is empty
+								}
 							}
 						} else {
-							newData[theKey] = "" // If not string, set empty
+							// If it's NOT a pointer, check if it's a string
+							if fieldValue.Kind() == reflect.String {
+								strValue := fieldValue.Interface().(string)
+								if strValue != "" {
+									woNumber := strValue
+									newData[theKey] = fmt.Sprintf(
+										`<a href="%s/odooms-project-task/detailWO?wo_number=%v" target="_blank">%v</a>`,
+										woDetailURL, woNumber, woNumber,
+									)
+								} else {
+									newData[theKey] = "" // Set empty if string is empty
+								}
+							} else {
+								newData[theKey] = "" // If not string, set empty
+							}
 						}
-					}
-				} else if theKey == "foto" {
-					var image_view strings.Builder
-					image_view.WriteString(fmt.Sprintf(`<div id="%s__%d" class="d-flex" style="width:400px;overflow:auto;">`, id_task, i))
-					for i, id := range id_foto {
-						// image := os.Getenv("FILESTORE_URL") +
-						image_view.WriteString(fmt.Sprintf(
-							`<div class="my-1 p-1" style="width:210px;display:flex;flex-direction:column;justify-content:space-between;">
-								<img src="/here/file/%s@%s" style="width:200px;height:auto;" class="card-img-top" alt="%s" onclick="window.open(this.src, '_blank');"/>
-								<h5 class="card-title text-center">%s</h5>
-							</div>`, id_task, id, judul_foto[i], judul_foto[i]))
-					}
-					image_view.WriteString(`</div>`)
-
-					newData[theKey] = image_view.String()
-				} else if theKey == "konfirmasi" {
-					newData[theKey] =
-						fmt.Sprintf(
+					case "foto":
+						var image_view strings.Builder
+						image_view.WriteString(fmt.Sprintf(`<div id="%s__%d" class="d-flex" style="width:400px;overflow:auto;">`, id_task, i))
+						for i, id := range id_foto {
+							// image := os.Getenv("FILESTORE_URL") +
+							image_view.WriteString(fmt.Sprintf(
+								`<div class="my-1 p-1" style="width:210px;display:flex;flex-direction:column;justify-content:space-between;">
+									<img src="/here/file/%s@%s" style="width:200px;height:auto;" class="card-img-top" alt="%s" onclick="window.open(this.src, '_blank');"/>
+									<h5 class="card-title text-center">%s</h5>
+								</div>`, id_task, id, judul_foto[i], judul_foto[i]))
+						}
+						image_view.WriteString(`</div>`)
+						newData[theKey] = image_view.String()
+					case "konfirmasi":
+						newData[theKey] = fmt.Sprintf(
 							`<div class="card">
 								<div class="card-body">
 									<div class="d-flex flex-column">
 										<input type="hidden" class="form-control id_task" value="%s">
 										<input type="text" class="form-control email" placeholder="email">
-										<input type="password" class="form-control password" placeholder="password">
+										<div class="input-group">
+											<input type="password" class="form-control password" placeholder="password">
+											<button type="button" class="btn btn-outline-secondary" onclick="togglePasswordInputFromButton(this)">
+												<i class="bx bx-show"></i>
+											</button>
+										</div>
 										<button class="btn btn-primary w-100" onclick="sendDataKonfirmasiError(this)">Konfirmasi</button>
 									</div>
 								</div>
-							</div>`, id_task,
-						)
-				} else if theKey == "cek" {
-					newData[theKey] =
-						fmt.Sprintf(
-							`
-							<div class="card-cek">
+							</div>`, id_task)
+					case "cek":
+						newData[theKey] = fmt.Sprintf(
+							`<div class="card-cek">
 								<input type="hidden" class="form-control id_task" value="%s">
 								<button class="btn btn-sm btn-warning" onclick="sendCekError(this)">
 									<i class='bx bx-refresh'></i>
 								</button>
-							</div>
-							`, id_task,
-						)
-				} else if theKey == "hapus" {
-					newData[theKey] =
-						fmt.Sprintf(
+							</div>`, id_task)
+					case "hapus":
+						newData[theKey] = fmt.Sprintf(
 							`<div class="card bg-label-danger">
 								<div class="card-body">
 									<div class="d-flex flex-column">
 										<input type="hidden" class="form-control id_task" value="%s">
 										<input type="text" class="form-control email" placeholder="email">
-										<input type="password" class="form-control password" placeholder="password">
+										<div class="input-group">
+											<input type="password" class="form-control password" placeholder="password">
+											<button type="button" class="btn btn-outline-secondary" onclick="togglePasswordInputFromButton(this)">
+												<i class="bx bx-show"></i>
+											</button>
+										</div>
 										<button class="btn btn-danger w-100" onclick="sendDataHapusError(this)">Hapus</button>
 									</div>
 								</div>
-							</div>`, id_task,
-						)
-				} else {
-					newData[theKey] = fieldValue.Interface()
+							</div>`, id_task)
+					case "log_edit":
+						logs := fieldValue.Interface().(string)
+						if logs == "" {
+							newData[theKey] = `<span class="text-muted">No edit logs available</span>`
+						} else {
+							var woNumber string
+							if person.Wo != nil {
+								woNumber = *person.Wo
+							}
+
+							newData[theKey] = fmt.Sprintf(
+								`<button class="btn btn-sm btn-info" onclick="showEditLogs('%d', '%s', '%s')">
+									<i class="bx bx-history me-2"></i> View Changes
+								</button>`,
+								person.ID,
+								woNumber,
+								strings.ReplaceAll(logs, "'", "\\'"))
+						}
+					default:
+						newData[theKey] = fieldValue.Interface()
+					}
 				}
 
 			}
@@ -549,6 +606,8 @@ func TabelDataFotoError(db *gorm.DB) gin.HandlerFunc {
 			"Foto Selfie Video Call", "Foto Selfie Teknisi dan Merchant",
 		}
 
+		woDetailURL := os.Getenv("WO_DETAIL_URL")
+
 		var data []gin.H
 		for _, dataInDB := range DbData {
 			newData := make(map[string]interface{})
@@ -598,7 +657,7 @@ func TabelDataFotoError(db *gorm.DB) gin.HandlerFunc {
 				} else if theKey == "wo" {
 					woNumber = fieldValue.Interface().(string)
 					if woNumber != "" {
-						newData[theKey] = fmt.Sprintf(`<a href="http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%v" target="_blank">%v</a>`, woNumber, woNumber)
+						newData[theKey] = fmt.Sprintf(`<a href="%s/odooms-project-task/detailWO?wo_number=%v" target="_blank">%v</a>`, woDetailURL, woNumber, woNumber)
 					} else {
 						newData[theKey] = fieldValue.Interface().(string)
 					}
@@ -864,6 +923,8 @@ func TabelDataPending(db *gorm.DB) gin.HandlerFunc {
 			"Foto Kontak Stiker PIC",
 		}
 
+		woDetailURL := os.Getenv("WO_DETAIL_URL")
+
 		var data []gin.H
 		for _, dataInDB := range DbData {
 			newData := make(map[string]interface{})
@@ -913,7 +974,7 @@ func TabelDataPending(db *gorm.DB) gin.HandlerFunc {
 				} else if theKey == "wo" {
 					woNumber = fieldValue.Interface().(string)
 					if woNumber != "" {
-						newData[theKey] = fmt.Sprintf(`<a href="http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%v" target="_blank">%v</a>`, woNumber, woNumber)
+						newData[theKey] = fmt.Sprintf(`<a href="%s/odooms-project-task/detailWO?wo_number=%v" target="_blank">%v</a>`, woDetailURL, woNumber, woNumber)
 					} else {
 						newData[theKey] = fieldValue.Interface().(string)
 					}

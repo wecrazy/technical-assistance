@@ -95,6 +95,7 @@ func HtmlRoutes(router *gin.Engine, db *gorm.DB, db_call_center *gorm.DB, db_pen
 	router.GET("/ta_monthly_report", controllers.GetTAMonthlyReport(db_pengerjaan))
 	router.GET("/compared_report", controllers.GetTAComparedReport(db_pengerjaan))
 	router.GET("/tech_error_report", controllers.GetTechErrorReport(db_pengerjaan, db))
+	router.POST("/check_existing_status_id_in_table_ta", controllers.GetIDTaskStatusInTableTA(db_pengerjaan))
 
 	// TA Feedback
 	router.POST(fun.GLOBAL_URL+"ta_feedback", controllers.TAFeedback(redisDB, db_pengerjaan, db))
@@ -176,6 +177,11 @@ func HtmlRoutes(router *gin.Engine, db *gorm.DB, db_call_center *gorm.DB, db_pen
 		{
 			tabKonfirmasiDataError.POST("/table", controllers.TablePengerjaanTeknisiError(db_pengerjaan, db))
 			tabKonfirmasiDataError.GET("/table.csv", controllers.ExportTable[op_model.Error](db_pengerjaan, "Konfirmasi Data Pengerjaan Teknisi Error"))
+		}
+		tabKonfirmasiDataSubmission := web.Group("/tab-konfirmasi-data-submission")
+		{
+			tabKonfirmasiDataSubmission.POST("/table", controllers.TablePengerjaanTeknisiSubmission(db_pengerjaan, db))
+			tabKonfirmasiDataSubmission.GET("/table.csv", controllers.ExportTable[op_model.TempSubmission](db_pengerjaan, "Konfirmasi Data Pengerjaan Teknisi Submission"))
 		}
 		tabLogAct := web.Group("/tab-log-act")
 		{

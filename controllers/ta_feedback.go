@@ -91,14 +91,19 @@ func TAFeedback(redisDB *redis.Client, db_pengerjaan *gorm.DB, db_web *gorm.DB) 
 
 		go func() {
 			var joData interface{}
-			if jsonData.Tabel == "error" {
+			switch jsonData.Tabel {
+			case "error":
 				var errorData op_model.Error
-				db_pengerjaan.Model(&op_model.Error{}).Where("id_task = ?", jsonData.IdTask).First(&errorData)
+				db_pengerjaan.Model(&op_model.Error{}).Where(&op_model.Error{IDTask: jsonData.IdTask}).First(&errorData)
 				joData = errorData
-			} else {
+			case "pending":
 				var pendingData op_model.Pending
-				db_pengerjaan.Model(&op_model.Pending{}).Where("id_task = ?", jsonData.IdTask).First(&pendingData)
+				db_pengerjaan.Model(&op_model.Pending{}).Where(&op_model.Pending{IDTask: jsonData.IdTask}).First(&pendingData)
 				joData = pendingData
+			case "temp_submission":
+				var tempSubmissionData op_model.TempSubmission
+				db_pengerjaan.Model(&op_model.TempSubmission{}).Where(&op_model.TempSubmission{IDTask: jsonData.IdTask}).First(&tempSubmissionData)
+				joData = tempSubmissionData
 			}
 
 			var teknisi, woNumber, ticketSubject, merchant, mid, tid string
@@ -115,6 +120,13 @@ func TAFeedback(redisDB *redis.Client, db_pengerjaan *gorm.DB, db_web *gorm.DB) 
 				woNumber = v.WoNumber
 				ticketSubject = v.SpkNumber
 				merchant = *v.Merchant
+				mid = v.MID
+				tid = v.TID
+			case op_model.TempSubmission:
+				teknisi = v.Teknisi
+				woNumber = v.WONumber
+				ticketSubject = v.SPKNumber
+				merchant = v.Merchant
 				mid = v.MID
 				tid = v.TID
 			}
@@ -170,5 +182,28 @@ func sendTAFeedback(data feedbackFromTA) {
 
 	if resp.StatusCode != http.StatusOK {
 		log.Printf("Feedback POST request returned status: %s", resp.Status)
+	}
+}
+
+func GetIDTaskStatusInTableTA(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var requestData struct {
+			Table  string `json:"table"`
+			IDTask string `json:"id_task"`
+		}
+
+		if err := c.ShouldBindJSON(&requestData); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON: " + err.Error()})
+			return
+		}
+
+		var isIDExists bool = false
+		err := db.Table(requestData.Table).Select("COUNT(*) > 0").Where("id_task = ?", requestData.IDTask).Find(&isIDExists).Error
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database query error: " + err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"exists": isIDExists})
 	}
 }

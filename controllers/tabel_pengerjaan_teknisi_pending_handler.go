@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"reflect"
 	"strings"
 	"ta_csna/fun"
@@ -103,7 +104,7 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 				if jsonKey == "" {
 					continue
 				}
-				if dataType != "string" {
+				if dataType != "string" && dataType != "*string" {
 					continue
 				}
 				// fmt.Printf("Variable Name: %s, Data Type: %s, JSON Key: %s, GORM Column Key: %s\n", varName, dataType, jsonKey, columnKey)
@@ -232,6 +233,9 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 		// 	"Foto Screen P2G",
 		// 	"Foto Kontak Stiker PIC",
 		// }
+
+		woDetailURL := os.Getenv("WO_DETAIL_URL")
+
 		for _, dbData := range Teknisis {
 			newData := make(map[string]interface{})
 
@@ -301,7 +305,7 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 				} else if theKey == "wo" {
 					woNumber = fieldValue.Interface().(string)
 					if woNumber != "" {
-						newData[theKey] = fmt.Sprintf(`<a href="http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%v" target="_blank">%v</a>`, woNumber, woNumber)
+						newData[theKey] = fmt.Sprintf(`<a href="%s/odooms-project-task/detailWO?wo_number=%v" target="_blank">%v</a>`, woDetailURL, woNumber, woNumber)
 					} else {
 						newData[theKey] = fieldValue.Interface().(string)
 					}
@@ -313,7 +317,7 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 						var dataTeknisi model.DataTeknisi
 						if err := dbWeb.Where("nama LIKE ?", "%"+namaTeknisi+"%").First(&dataTeknisi).Error; err != nil {
 							// log.Print(err)
-							nomorTeknisi = "00000000"
+							nomorTeknisi = "87883507445"
 						}
 						nomorTeknisi = dataTeknisi.NoHP
 
@@ -436,7 +440,38 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 								<div class="d-flex flex-column">
 									<input type="hidden" class="form-control id_task" value="%s">
 									<input type="text" class="form-control email" placeholder="Masukkan email di ODOO">
-									<input type="password" class="form-control password" placeholder="Masukkan password Anda">
+									<div class="input-group">
+										<input type="password" class="form-control password" placeholder="Masukkan password Anda">
+										<button type="button" class="btn btn-outline-secondary" onclick="togglePasswordInputFromButton(this)">
+											<i class="bx bx-show"></i>
+										</button>
+									</div>
+
+									<div class="form-check d-flex align-items-center mt-2 mb-2">
+										<input 
+											class="form-check-input is-paid" 
+											type="checkbox"
+											checked
+											id="is-paid"
+											data-bs-toggle="tooltip" 
+											data-bs-placement="right" 
+											title="Jika dicentang, pengerjaan teknisi nantinya akan dibayarkan"
+										>
+										<label for="is-paid" class="form-check-label ms-2">Paid?</label>
+									</div>
+
+									<div class="form-check d-flex align-items-center mb-2">
+										<input 
+											class="form-check-input keep-data" 
+											type="checkbox"
+											id="keep-data"
+											data-bs-toggle="tooltip" 
+											data-bs-placement="right" 
+											title="Jika dicentang, data akan tetap muncul di Dashboard TA 😃"
+										>
+										<label for="keep-data" class="form-check-label ms-2">Tetap Simpan Data?</label>
+									</div>
+
 									<button class="btn btn-primary w-100" onclick="sendDataKonfirmasiPending(this)">Konfirmasi</button>
 								</div>
 							</div>
@@ -450,7 +485,12 @@ func TablePengerjaanTeknisiPending(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc 
 								<div class="d-flex flex-column">
 									<input type="hidden" class="form-control id_task" value="%s">
 									<input type="text" class="form-control email" placeholder="Masukkan email di ODOO">
-									<input type="password" class="form-control password" placeholder="Masukkan password Anda">
+									<div class="input-group">
+										<input type="password" class="form-control password" placeholder="Masukkan password Anda">
+										<button type="button" class="btn btn-outline-secondary" onclick="togglePasswordInputFromButton(this)">
+											<i class="bx bx-show"></i>
+										</button>
+									</div>
 									<textarea class="form-control ta_remark" rows="4" placeholder="Alasan data JO dihapus dari dashboard . . ."></textarea>
 									<button class="btn btn-danger w-100" onclick="sendDataHapusPending(this)">Hapus</button>
 								</div>

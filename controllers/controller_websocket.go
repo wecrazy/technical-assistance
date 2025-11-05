@@ -118,6 +118,11 @@ func WebSocketRealtime() gin.HandlerFunc {
 					if err := db.Where("id_task = ?", latestID).First(&data).Error; err == nil {
 						latestData = data
 					}
+				case "temp_submission":
+					var data op_model.TempSubmission
+					if err := db.Where("id_task = ?", latestID).First(&data).Error; err == nil {
+						latestData = data
+					}
 				default:
 					log.Println("WS Realtime: Unknown table")
 					continue
@@ -213,6 +218,12 @@ func WebSocketLockData(redisDB *redis.Client, db *gorm.DB) gin.HandlerFunc {
 				case "dt_teknisi_pengerjaan_error":
 					// Always update date_on_check to current time, regardless of its previous value
 					if err := db.Model(&op_model.Error{}).Where("id_task = ?", intID).Update("date_on_check", time.Now()).Error; err != nil {
+						log.Println("Error updating date_on_check:", err)
+						continue
+					}
+				case "dt_teknisi_pengerjaan_submission":
+					// Always update date_on_check to current time, regardless of its previous value
+					if err := db.Model(&op_model.TempSubmission{}).Where("id_task = ?", intID).Update("date_on_check", time.Now()).Error; err != nil {
 						log.Println("Error updating date_on_check:", err)
 						continue
 					}

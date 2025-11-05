@@ -23,6 +23,8 @@ func AutoMigrateWeb(db *gorm.DB) {
 		&model.Feature{},
 		&model.LogActivity{},
 		&model.UploadedFiles{},
+
+		// TA Model
 		&op_model.WAMessage{},
 		&op_model.TAHandledData{},
 	); err != nil {
@@ -183,6 +185,9 @@ func AutoMigrateWeb(db *gorm.DB) {
 		},
 		{
 			Title: "Teknisi Error", Path: "tab-konfirmasi-data-error", Icon: "bx bx-bug-alt",
+		},
+		{
+			Title: "Awaiting Submission", Path: "tab-konfirmasi-data-submission", Icon: "bx bxs-hourglass-top",
 		},
 		{
 			Title: "Log Activity Team Technical Assistance", Path: "tab-log-act", Icon: "bx bx-list-check",

@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
+func TablePengerjaanTeknisiSubmission(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request struct {
 			Draw       int    `form:"draw"`
@@ -36,7 +36,7 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		t := reflect.TypeOf(op_model.Error{})
+		t := reflect.TypeOf(op_model.TempSubmission{})
 
 		// Initialize the map
 		columnMap := make(map[int]string)
@@ -47,7 +47,7 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 			field := t.Field(i)
 			// Get the JSON key
 			jsonKey := field.Tag.Get("json")
-			if jsonKey == "" || jsonKey == "-" || jsonKey == "foto" || jsonKey == "cek" || jsonKey == "konfirmasi" || jsonKey == "hapus" {
+			if jsonKey == "" || jsonKey == "-" || jsonKey == "foto" || jsonKey == "cek" || jsonKey == "edit" || jsonKey == "hapus" {
 				continue
 			}
 			columnMap[colNum] = jsonKey
@@ -58,8 +58,13 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 		sortColumnName := columnMap[request.SortColumn]
 		orderString := fmt.Sprintf("%s %s", sortColumnName, request.SortDir)
 
+		// Default to id_task desc if no sort column is specified
+		if sortColumnName == "" {
+			orderString = "id_task desc"
+		}
+
 		// Initial query for filtering
-		filteredQuery := db.Model(&op_model.Error{})
+		filteredQuery := db.Model(&op_model.TempSubmission{})
 
 		// // Apply filters
 		if request.Search != "" {
@@ -89,7 +94,7 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 						break
 					}
 				}
-				if jsonKey == "" || jsonKey == "-" || jsonKey == "foto" || jsonKey == "konfirmasi" || jsonKey == "hapus" || jsonKey == "cek" || jsonKey == "edit" {
+				if jsonKey == "" || jsonKey == "-" || jsonKey == "foto" || jsonKey == "hapus" || jsonKey == "cek" || jsonKey == "edit" {
 					if columnKey == "" || columnKey == "-" {
 						continue
 					} else {
@@ -115,7 +120,7 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 				field := t.Field(i)
 				// formKey := field.Tag.Get("form")
 				formKey := field.Tag.Get("json")
-				if formKey == "" || formKey == "-" || formKey == "foto" || formKey == "konfirmasi" || formKey == "hapus" || formKey == "cek" || formKey == "edit" {
+				if formKey == "" || formKey == "-" || formKey == "foto" || formKey == "hapus" || formKey == "cek" || formKey == "edit" {
 					continue
 				}
 				formValue := c.PostForm(formKey)
@@ -159,7 +164,7 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 
 		// Count the total number of records
 		var totalRecords int64
-		db.Model(&op_model.Error{}).Count(&totalRecords)
+		db.Model(&op_model.TempSubmission{}).Count(&totalRecords)
 
 		// Count the number of filtered records
 		var filteredRecords int64
@@ -167,7 +172,7 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 
 		// Apply sorting and pagination to the filtered query
 		query := filteredQuery.Order(orderString)
-		var Teknisis []op_model.Error
+		var Teknisis []op_model.TempSubmission
 		query = query.Offset(request.Start).Limit(request.Length).Find(&Teknisis)
 
 		if query.Error != nil {
@@ -180,57 +185,6 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 			})
 			return
 		}
-		// id_foto := []string{
-		// 	"x_foto_bast",
-		// 	"x_foto_ceklis",
-		// 	"x_foto_edc",
-		// 	"x_foto_pic",
-		// 	"x_foto_setting",
-		// 	"x_foto_thermal",
-		// 	"x_foto_toko",
-		// 	"x_foto_training",
-		// 	"x_foto_transaksi",
-		// 	"x_tanda_tangan_pic",
-		// 	"x_tanda_tangan_teknisi",
-
-		// 	// New entries
-		// 	"x_foto_sticker_edc",
-		// 	"x_foto_screen_guard",
-		// 	"x_foto_all_transaction",
-		// 	"x_foto_transaksi_bmri",
-		// 	"x_foto_transaksi_bni",
-		// 	"x_foto_transaksi_bri",
-		// 	"x_foto_transaksi_btn",
-		// 	"x_foto_transaksi_patch",
-		// 	"x_foto_screen_p2g",
-		// 	"x_foto_kontak_stiker_pic",
-		// }
-
-		// judul_foto := []string{
-		// 	"Foto BAST",
-		// 	"Foto Media Promo",
-		// 	"Foto SN EDC",
-		// 	"Foto PIC Merchant",
-		// 	"Foto Pengaturan",
-		// 	"Foto Thermal",
-		// 	"Foto Merchant",
-		// 	"Foto Surat Training",
-		// 	"Foto Transaksi",
-		// 	"Tanda Tangan PIC",
-		// 	"Tanda Tangan Teknisi",
-
-		// 	// New titles
-		// 	"Foto Stiker EDC",
-		// 	"Foto Screen Gard",
-		// 	"Foto Sales Draft All Memberbank",
-		// 	"Foto Sales Draft BMRI",
-		// 	"Foto Sales Draft BNI",
-		// 	"Foto Sales Draft BRI",
-		// 	"Foto Sales Draft BTN",
-		// 	"Foto Sales Draft Patch L",
-		// 	"Foto Screen P2G",
-		// 	"Foto Kontak Stiker PIC",
-		// }
 
 		woDetailURL := os.Getenv("WO_DETAIL_URL")
 
@@ -258,57 +212,60 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 					}
 				}
 
-				// Handle time.Time fields differently
-				if fieldValue.Type() == reflect.TypeOf(time.Time{}) {
-					if theKey == "birthdate" {
+				switch theKey {
+				case "birthdate":
+					if fieldValue.Type() == reflect.TypeOf(time.Time{}) {
 						newData[theKey] = fieldValue.Interface().(time.Time).Format(fun.T_YYYYMMDD)
-					} else if theKey == "date" {
+					} else if fieldValue.Kind() == reflect.Ptr && fieldValue.Type().Elem() == reflect.TypeOf(time.Time{}) {
+						if fieldValue.IsNil() {
+							newData[theKey] = "N/A"
+						} else {
+							timeValue := fieldValue.Interface().(*time.Time)
+							newData[theKey] = timeValue.Format(fun.T_YYYYMMDD)
+						}
+					}
+				case "date":
+					if fieldValue.Type() == reflect.TypeOf(time.Time{}) {
 						newData[theKey] = fieldValue.Interface().(time.Time).
 							Add(7 * time.Hour).
 							Format(fun.T_YYYYMMDD_HHmmss)
-					} else {
-						newData[theKey] = fieldValue.Interface().(time.Time).Format(fun.T_YYYYMMDD_HHmmss)
+					} else if fieldValue.Kind() == reflect.Ptr && fieldValue.Type().Elem() == reflect.TypeOf(time.Time{}) {
+						if fieldValue.IsNil() {
+							newData[theKey] = "N/A"
+						} else {
+							timeValue := fieldValue.Interface().(*time.Time)
+							newData[theKey] = timeValue.Add(7 * time.Hour).Format(fun.T_YYYYMMDD_HHmmss)
+						}
 					}
-				} else if theKey == "time_start" || theKey == "time_stop" {
-					layout := "2006-01-02 15:04:05"
-					parsedTime, err := time.Parse(layout, fieldValue.Interface().(string))
-					if err == nil {
-						newData[theKey] = parsedTime.Add(7 * time.Hour).Format(layout)
-					} else {
-						newData[theKey] = fieldValue.Interface().(string)
+				case "time_start", "time_stop":
+					if fieldValue.Kind() == reflect.Ptr && fieldValue.Type().Elem() == reflect.TypeOf(time.Time{}) {
+						if fieldValue.IsNil() {
+							newData[theKey] = "N/A"
+						} else {
+							timeValue := fieldValue.Interface().(*time.Time)
+							newData[theKey] = timeValue.Format("2006-01-02 15:04:05")
+						}
 					}
-				} else if theKey == "id_task" {
+				case "id_task":
 					id_task = fieldValue.Interface().(string)
 					newData[theKey] = fieldValue.Interface().(string)
-				} else if theKey == "company" {
+				case "company":
 					company = fieldValue.Interface().(string)
 					newData[theKey] = fieldValue.Interface().(string)
-				} else if theKey == "reason" {
+				case "reason":
 					reasonCode = fieldValue.Interface().(string)
 					newData[theKey] = fieldValue.Interface().(string)
-				} else if theKey == "keterangan" {
-					var dataValue *string
-					if fieldValue.IsNil() {
-						dataValue = nil
-					} else {
-						dataValue = fieldValue.Interface().(*string)
-					}
-
-					if dataValue == nil {
-						woRemark = ""
-						newData[theKey] = ""
-					} else {
-						woRemark = *dataValue
-						newData[theKey] = *dataValue
-					}
-				} else if theKey == "wo" {
+				case "keterangan":
+					woRemark = fieldValue.Interface().(string)
+					newData[theKey] = woRemark
+				case "wo":
 					woNumber = fieldValue.Interface().(string)
 					if woNumber != "" {
 						newData[theKey] = fmt.Sprintf(`<a href="%s/odooms-project-task/detailWO?wo_number=%v" target="_blank">%v</a>`, woDetailURL, woNumber, woNumber)
 					} else {
 						newData[theKey] = fieldValue.Interface().(string)
 					}
-				} else if theKey == "teknisi" {
+				case "teknisi":
 					namaTeknisi := fieldValue.Interface().(string)
 
 					if namaTeknisi != "" {
@@ -324,44 +281,19 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 					} else {
 						newData[theKey] = fieldValue.Interface().(string)
 					}
-				} else if theKey == "foto" {
-					// var image_view strings.Builder
-					// image_view.WriteString(fmt.Sprintf(`<div id="%s__%d" class="d-flex" style="width:400px;overflow:auto;">`, id_task, i))
-					// for i, id := range id_foto {
-					// 	// image := os.Getenv("FILESTORE_URL") +
-					// 	// image_view.WriteString(fmt.Sprintf(
-					// 	// 	`<div class="my-1 p-1" style="width:210px;display:flex;flex-direction:column;justify-content:space-between;">
-					// 	// 		<img src="/here/file/%s@%s" style="width:200px;height:auto;" class="card-img-top" alt="%s" onclick="window.open(this.src, '_blank');"/>
-					// 	// 		<h5 class="card-title text-center">%s</h5>
-					// 	// 	</div>`, id_task, id, judul_foto[i], judul_foto[i]))
-					// 	image_view.WriteString(fmt.Sprintf(
-					// 		`<div class="my-1 p-1" style="width:210px;display:flex;flex-direction:column;justify-content:space-between;">
-					// 		<img src="/here/file/%s@%s"
-					// 			style="width:200px;height:200px;object-fit:contain;cursor:pointer;"
-					// 			class="card-img-top"
-					// 			alt="%s"
-					// 			onclick="window.open(this.src, '_blank');"
-					// 			onerror="this.onerror=null; this.src='/assets/self/img/no-img.jpg';"/>
-					// 		<h5 class="card-title text-center">%s</h5>
-					// 	</div>`, id_task, id, judul_foto[i], judul_foto[i]))
-
-					// }
-					// image_view.WriteString(`</div>`)
-
-					// newData[theKey] = image_view.String()
-
+				case "foto":
 					// Btn photos
 					newData[theKey] =
 						fmt.Sprintf(
 							`
 							<div class="card-cek">
-								<button class="btn btn-sm btn-info" onclick="openPopupPhotos('%s', 'error')">
+								<button class="btn btn-sm btn-info" onclick="openPopupPhotos('%s', 'temp_submission')">
 									<i class='bx bx-image-alt me-2'></i> Lihat Foto & Tambahan Data
 								</button>
 							</div>
 							`, id_task,
 						)
-				} else if theKey == "ta_feedback" {
+				case "ta_feedback":
 					taFeedback := fieldValue.Interface().(string)
 					escapedValue := template.HTMLEscapeString(taFeedback)
 					taFeedbackValue = escapedValue
@@ -375,65 +307,20 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 									onclick="editFeedback(this, '%s', '%s', '%s', '%s')">%s</textarea>
 							</div>
 						</div>
-					`, escapedValue, "error", id_task, woNumber, "ta_feedback", escapedValue)
-				} else if theKey == "konfirmasi" {
-					newData[theKey] =
-						fmt.Sprintf(
-							`<div class="card">
-								<div class="card-body">
-									<div class="d-flex flex-column">
-										<input type="hidden" class="form-control id_task" value="%s">
-										<input type="text" class="form-control email" placeholder="Masukkan email di ODOO">
-										<div class="input-group">
-											<input type="password" class="form-control password" placeholder="Masukkan password Anda">
-											<button type="button" class="btn btn-outline-secondary" onclick="togglePasswordInputFromButton(this)">
-												<i class="bx bx-show"></i>
-											</button>
-										</div>
-
-										<div class="form-check d-flex align-items-center mt-2 mb-2">
-											<input 
-												class="form-check-input is-paid" 
-												type="checkbox"
-												checked
-												id="is-paid"
-												data-bs-toggle="tooltip" 
-												data-bs-placement="right" 
-												title="Jika dicentang, pengerjaan teknisi nantinya akan dibayarkan"
-											>
-											<label for="is-paid" class="form-check-label ms-2">Paid?</label>
-										</div>
-
-										<div class="form-check d-flex align-items-center mb-2">
-											<input 
-												class="form-check-input keep-data" 
-												type="checkbox"
-												id="keep-data"
-												data-bs-toggle="tooltip" 
-												data-bs-placement="right" 
-												title="Jika dicentang, data akan tetap muncul di Dashboard TA 😃"
-											>
-											<label for="keep-data" class="form-check-label ms-2">Tetap Simpan Data?</label>
-										</div>
-
-										<button class="btn btn-primary w-100" onclick="sendDataKonfirmasiError(this)">Konfirmasi</button>
-									</div>
-								</div>
-							</div>`, id_task,
-						)
-				} else if theKey == "cek" {
+					`, escapedValue, "temp_submission", id_task, woNumber, "ta_feedback", escapedValue)
+				case "cek":
 					newData[theKey] =
 						fmt.Sprintf(
 							`
 							<div class="card-cek">
 								<input type="hidden" class="form-control id_task" value="%s">
-								<button class="btn btn-sm btn-warning" onclick="sendCekError(this)">
+								<button class="btn btn-sm btn-warning" onclick="sendCekSubmission(this)">
 									<i class='bx bx-refresh'></i>
 								</button>
 							</div>
 							`, id_task,
 						)
-				} else if theKey == "edit" {
+				case "edit":
 					newData[theKey] =
 						fmt.Sprintf(
 							`
@@ -456,7 +343,7 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 							woRemark,
 							taFeedbackValue,
 						)
-				} else if theKey == "hapus" {
+				case "hapus":
 					newData[theKey] =
 						fmt.Sprintf(
 							`<div class="card bg-label-danger">
@@ -471,12 +358,32 @@ func TablePengerjaanTeknisiError(db *gorm.DB, dbWeb *gorm.DB) gin.HandlerFunc {
 											</button>
 										</div>
 										<textarea class="form-control ta_remark" rows="4" placeholder="Alasan data JO dihapus dari dashboard . . ."></textarea>
-										<button class="btn btn-danger w-100" onclick="sendDataHapusError(this)">Hapus</button>
+										<button class="btn btn-danger w-100" onclick="sendDataHapusSubmission(this)">Hapus</button>
 									</div>
 								</div>
 							</div>`, id_task,
 						)
-				} else {
+				case "log_edit":
+					logs := fieldValue.Interface().(string)
+					if logs == "" {
+						newData[theKey] = `<span class="text-muted">No edit logs available</span>`
+					} else {
+						var woNumber string
+						if dbData.WONumber != "" {
+							woNumber = dbData.WONumber
+						} else {
+							woNumber = "N/A"
+						}
+
+						newData[theKey] = fmt.Sprintf(
+							`<button class="btn btn-sm btn-info" onclick="showEditLogs('%d', '%s', '%s')">
+									<i class="bx bx-history me-2"></i> View Changes
+								</button>`,
+							dbData.ID,
+							woNumber,
+							strings.ReplaceAll(logs, "'", "\\'"))
+					}
+				default:
 					newData[theKey] = fieldValue.Interface()
 				}
 

@@ -31,22 +31,34 @@ func ShowPhotoByID(redisDB *redis.Client, db_pengerjaan *gorm.DB) gin.HandlerFun
 		}
 
 		var joData interface{}
-		if table == "error" {
+		switch table {
+		case "error":
 			var errorData op_model.Error
-			result := db_pengerjaan.Model(&op_model.Error{}).Where("id_task = ?", id_task).First(&errorData)
+			result := db_pengerjaan.Model(&op_model.Error{}).Where(&op_model.Error{IDTask: id_task}).First(&errorData)
 			if result.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to fetch data", "detail": result.Error.Error()})
 				return
 			}
 			joData = errorData
-		} else {
+		case "pending":
 			var pendingData op_model.Pending
-			result := db_pengerjaan.Model(&op_model.Pending{}).Where("id_task = ?", id_task).First(&pendingData)
+			result := db_pengerjaan.Model(&op_model.Pending{}).Where(&op_model.Pending{IDTask: id_task}).First(&pendingData)
 			if result.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to fetch data", "detail": result.Error.Error()})
 				return
 			}
 			joData = pendingData
+		case "temp_submission":
+			var tempSubmissionData op_model.TempSubmission
+			result := db_pengerjaan.Model(&op_model.TempSubmission{}).Where(&op_model.TempSubmission{IDTask: id_task}).First(&tempSubmissionData)
+			if result.Error != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to fetch data", "detail": result.Error.Error()})
+				return
+			}
+			joData = tempSubmissionData
+		default:
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "unknown table"})
+			return
 		}
 
 		var teknisi, woNumber, ticketSubject, merchant, mid, tid string
@@ -63,6 +75,13 @@ func ShowPhotoByID(redisDB *redis.Client, db_pengerjaan *gorm.DB) gin.HandlerFun
 			woNumber = v.WoNumber
 			ticketSubject = v.SpkNumber
 			merchant = *v.Merchant
+			mid = v.MID
+			tid = v.TID
+		case op_model.TempSubmission:
+			teknisi = v.Teknisi
+			woNumber = v.WONumber
+			ticketSubject = v.SPKNumber
+			merchant = v.Merchant
 			mid = v.MID
 			tid = v.TID
 		}

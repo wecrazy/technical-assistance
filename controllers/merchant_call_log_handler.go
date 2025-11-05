@@ -244,7 +244,7 @@ func TableMerchantH_1CallLog(db *gorm.DB) gin.HandlerFunc {
 						newData[theKey] = `<span class="badge rounded-pill bg-label-danger">Not Reschedule</span>`
 					}
 				} else if theKey == "wonumber" {
-					newData[theKey] = fmt.Sprintf(`<a href="%v/projectTask/detailWO?wo_number=%v" target="_blank">%v</a>`,
+					newData[theKey] = fmt.Sprintf(`<a href="%v/odooms-project-task/detailWO?wo_number=%v" target="_blank">%v</a>`,
 						os.Getenv("WO_DETAIL_URL"),
 						fieldValue.Interface().(string),
 						fieldValue.Interface().(string))

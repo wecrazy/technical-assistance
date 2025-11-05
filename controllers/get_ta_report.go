@@ -520,6 +520,8 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 		f.SetCellStyle(masterSheet, cell, cell, style)
 	}
 
+	woDetailURL := os.Getenv("WO_DETAIL_URL")
+
 	rowIndex := 2
 	for _, record := range taActivityData {
 		for _, column := range columns {
@@ -552,7 +554,7 @@ func GenerateTAExcelReport(db *gorm.DB, dbWeb *gorm.DB) (string, string, error) 
 			case "WO Number":
 				if record.Wo != nil && *record.Wo != "" && *record.Wo != "0" {
 					wo := *record.Wo
-					link := fmt.Sprintf("http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%s", wo)
+					link := fmt.Sprintf("%s/odooms-project-task/detailWO?wo_number=%s", woDetailURL, wo)
 					f.SetCellHyperLink(masterSheet, cell, link, "External")
 					value = wo
 				}
@@ -2009,6 +2011,8 @@ func GenerateTAMonthlyExcelReport(db *gorm.DB) (string, string, error) {
 		f.SetCellStyle(masterSheet, cell, cell, style)
 	}
 
+	woDetailURL := os.Getenv("WO_DETAIL_URL")
+
 	rowIndex := 2
 	for _, record := range taActivityData {
 		for _, column := range columns {
@@ -2041,7 +2045,7 @@ func GenerateTAMonthlyExcelReport(db *gorm.DB) (string, string, error) {
 			case "WO Number":
 				if record.Wo != nil && *record.Wo != "" && *record.Wo != "0" {
 					wo := *record.Wo
-					link := fmt.Sprintf("http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%s", wo)
+					link := fmt.Sprintf("%s/odooms-project-task/detailWO?wo_number=%s", woDetailURL, wo)
 					f.SetCellHyperLink(masterSheet, cell, link, "External")
 					value = wo
 				}
@@ -2885,6 +2889,8 @@ func GenerateTAComparedReport(db *gorm.DB) (string, string, error) {
 		"Foto Selfie Teknisi dan Merchant": "x_foto_selfie_teknisi_merchant",
 	}
 
+	woDetailURL := os.Getenv("WO_DETAIL_URL")
+
 	if len(errorData) > 0 {
 		for _, record := range errorData {
 			for _, column := range columns {
@@ -2918,7 +2924,7 @@ func GenerateTAComparedReport(db *gorm.DB) (string, string, error) {
 					case "WO Number":
 						if record.WoNumber != "" {
 							wo := record.WoNumber
-							link := fmt.Sprintf("http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%s", wo)
+							link := fmt.Sprintf("%s/odooms-project-task/detailWO?wo_number=%s", woDetailURL, wo)
 							f.SetCellHyperLink(masterSheet, cell, link, "External")
 							value = wo
 						}
@@ -3120,7 +3126,7 @@ func GenerateTAComparedReport(db *gorm.DB) (string, string, error) {
 					case "WO Number":
 						if record.WoNumber != "" {
 							wo := record.WoNumber
-							link := fmt.Sprintf("http://smartwebindonesia.com:3405/projectTask/detailWO?wo_number=%s", wo)
+							link := fmt.Sprintf("%s/odooms-project-task/detailWO?wo_number=%s", woDetailURL, wo)
 							f.SetCellHyperLink(masterSheet, cell, link, "External")
 							value = wo
 						}
