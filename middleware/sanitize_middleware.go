@@ -3,7 +3,6 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"strings"
 
@@ -47,7 +46,7 @@ func SanitizeMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		switch c.Request.Method {
 		case "POST", "PUT", "PATCH":
-			fmt.Println("ONLY ACCEPT body RAW JSON & FORM DATA")
+			// fmt.Println("ONLY ACCEPT body RAW JSON & FORM DATA")
 		}
 		p := bluemonday.UGCPolicy()
 

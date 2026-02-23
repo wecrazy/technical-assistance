@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -91,6 +92,7 @@ func main() {
 	webHostPort := os.Getenv("APP_LISTEN")
 	ginMode := os.Getenv("GIN_MODE")
 	gin.SetMode(ginMode)
+	gin.DefaultWriter = io.Discard
 
 	//PREPARE DB
 	db, err := database.InitAndCheckDB(

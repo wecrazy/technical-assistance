@@ -6,11 +6,14 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // InitDB initializes and returns a database connection
 func InitDB(dbURI string) (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(dbURI), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dbURI), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +22,9 @@ func InitDB(dbURI string) (*gorm.DB, error) {
 }
 
 func InitWebDB(dbURI string) (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(dbURI), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dbURI), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +40,9 @@ func InitAndCheckDB(dbUser, dbPass, dbHost, dbPort, dbName string) (*gorm.DB, er
 		dbHost,
 		dbPort,
 	)
-	infoSchemaDB, err := gorm.Open(mysql.Open(infoSchemaURI), &gorm.Config{})
+	infoSchemaDB, err := gorm.Open(mysql.Open(infoSchemaURI), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to information_schema: %v", err)
 	}
@@ -73,7 +80,9 @@ func InitAndCheckDB(dbUser, dbPass, dbHost, dbPort, dbName string) (*gorm.DB, er
 		dbPort,
 		dbName,
 	)
-	db, err := gorm.Open(mysql.Open(dbURI), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dbURI), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}

@@ -69,9 +69,9 @@ func MainPage(db *gorm.DB, redisDB *redis.Client) gin.HandlerFunc {
 			fun.ClearCookiesAndRedirect(c, cookies)
 			return
 		}
-		fmt.Println("id = ", admin.ID)
-		fmt.Println("session = ", admin.Session)
-		fmt.Println("session_send = ", session)
+		// fmt.Println("id = ", admin.ID)
+		// fmt.Println("session = ", admin.Session)
+		// fmt.Println("session_send = ", session)
 		if admin.Session != session {
 			fun.RemoveEmailSession(db, emailToken)
 			fun.ClearCookiesAndRedirect(c, cookies)

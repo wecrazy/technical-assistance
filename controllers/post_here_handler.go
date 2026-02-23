@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -73,7 +72,7 @@ func PostHere() gin.HandlerFunc {
 
 		// Ambil path dari request
 		targetURL := os.Getenv("FILESTORE_URL") + "/here" + c.Param("path")
-		fmt.Println("Forwarding to:", targetURL)
+		// fmt.Println("Forwarding to:", targetURL)
 
 		// Buat request baru ke target server
 		req, err := http.NewRequest(c.Request.Method, targetURL, bytes.NewBuffer(bodyBytes))
