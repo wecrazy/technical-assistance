@@ -37,3 +37,7 @@ config/conf.yaml
 *.xlsx
 
 main
+.env
+*.mp4
+*.xlsx
+config/conf.yaml

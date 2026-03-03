@@ -1,0 +1,37 @@
+EMAIL:
+  HOST: "smtp.example.com"
+  PORT: 587
+  USERNAME: "your-email@example.com"
+  PASSWORD: "your-email-password"
+  MAX_RETRY: 60
+  RETRY_DELAY: 30
+
+DEFAULT:
+  TA_FEEDBACK_URL: "http://127.0.0.1:2221/ta/feedback_by_ta"
+
+ODOO:
+  JSONRPC: "2.0"
+  # Manage Service #####################################################################
+  LOGIN: user@example.com
+  PASSWORD: your-password
+  DB: your_db_name
+  URL_SESSION: https://your-odoo-instance.example.com:8069/web/session/authenticate
+  URL_GETDATA: https://your-odoo-instance.example.com:8069/api/getdata
+  # ATM ################################################################################
+  LOGIN_ATM: atm-user@example.com
+  PASSWORD_ATM: your-atm-password
+  DB_ATM: your_atm_db_name
+  URL_SESSION_ATM: https://your-atm-instance.example.com:8069/web/session/authenticate
+  URL_GETDATA_ATM: https://your-atm-instance.example.com:8069/api/getdata
+  MAX_RETRY: 10
+  RETRY_DELAY: 5
+  SESSION_TIMEOUT: "300s"
+  GETDATA_TIMEOUT: "1000m"
+  COMPANY_ALLOWED: [1, 2, 3] # Add your allowed company IDs here
+  
+REPORT:
+  TO:
+    # - "recipient@example.com"
+  CC:
+    # - "cc-recipient@example.com"
+  BCC:
