@@ -25,9 +25,9 @@
 
 | | | |
 |:---:|:---:|:---:|
-| <img src="preview/01.png" width="250" alt="Screen 1"> | <img src="preview/02.png" width="250" alt="Screen 2"> | <img src="preview/03.png" width="250" alt="Screen 3"> |
-| <img src="preview/04.png" width="250" alt="Screen 4"> | <img src="preview/05.png" width="250" alt="Screen 5"> | <img src="preview/06.png" width="250" alt="Screen 6"> |
-| <img src="preview/07.png" width="250" alt="Screen 7"> | | |
+| <img src="preview/1.png" width="250" alt="Screen 1"> | <img src="preview/2.png" width="250" alt="Screen 2"> | <img src="preview/3.png" width="250" alt="Screen 3"> |
+| <img src="preview/4.png" width="250" alt="Screen 4"> | <img src="preview/5.png" width="250" alt="Screen 5"> | <img src="preview/6.png" width="250" alt="Screen 6"> |
+| <img src="preview/7.png" width="250" alt="Screen 7"> | | |
 
 </div>
 
